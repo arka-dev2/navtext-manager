@@ -3,46 +3,64 @@ const puppeteer = require("puppeteer");
 const axios = require("axios");
 const fs = require("fs");
 const messages = [];
-const txtFileLinks = [];
+const linkNavTex = [];
 let page;
 
 (async () => {
-  const date = new Date();
-  const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${
-    date.getDate() + 1
-  }`;
   const browser = await puppeteer.launch();
   page = await browser.newPage();
-  for (let i = 0; i < 2; i++) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    let day = date.getDate() - i;
-    day = day < 10 ? `0${day}` : day;
-    const dateString = `${year}-${month}-${day}`;
-    await page.goto(`https://www.navtex.net/Navtex_Archive/${dateString}`);
-    await searceFile();
-  }
-  await downloadMessages();
-  writeMessagesInFile();
+  // await page.screenshot({ path: "screenshot.png" });
+  await getLinkNavtex();
+  // await downloadMessages();
+  // writeMessagesInFile();
 
   await browser.close();
 })();
 
-async function searceFile() {
-  let links = await page.$$("body > table > tbody > tr > td > a");
-  let homelink = links[0];
-  links = links.slice(1, links.length);
-  try {
-    for (let j = 0; j < links.length; j++) {
-      let href = await links[j].getProperty("href");
+async function getLinkNavtex() {
+  // const pageNumber = await getPageNumber();
+  const pageNumber = 40;
+  for (let i = 1; i <= pageNumber; i++) {
+    await page.goto(`https://marinesafety.net/?query-52-page=${i}`);
+    let links = await page.$$(
+      "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div > div:nth-child(3) > h4 > a"
+    );
+    for (let link of links) {
+      let href = await link.getProperty("href");
       let hrefValue = await href.jsonValue();
-      txtFileLinks.push(hrefValue);
+      linkNavTex.push(hrefValue);
     }
-    homelink.click();
-    await page.waitForNavigation();
-  } catch (e) {
-    console.log("errore");
   }
+  //
+
+  // for (let j = 0; j < links.length; j++) {
+  //   let href = await links[j].getProperty("href");
+  //   let hrefValue = await href.jsonValue();
+  //   txtFileLinks.push(hrefValue);
+  // }
+  // let homelink = links[0];
+  // links = links.slice(1, links.length);
+  // try {
+  //   for (let j = 0; j < links.length; j++) {
+  //     let href = await links[j].getProperty("href");
+  //     let hrefValue = await href.jsonValue();
+  //     txtFileLinks.push(hrefValue);
+  //   }
+  //   homelink.click();
+  //   await page.waitForNavigation();
+  // } catch (e) {
+  //   console.log("errore");
+  // }
+}
+
+async function getPageNumber() {
+  await page.goto(`https://marinesafety.net/`);
+  const element = await page.$(
+    "body > div.wp-site-blocks > div > div:nth-child(2) > div > nav > div > a:nth-child(5)"
+  );
+  const innerHTML = await page.evaluate((el) => el.innerHTML, element);
+  const pageNumber = Number(innerHTML.replaceAll(",", "."));
+  return pageNumber;
 }
 
 async function downloadMessages() {
