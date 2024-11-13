@@ -31,26 +31,6 @@ async function getLinkNavtex() {
       linkNavTex.push(hrefValue);
     }
   }
-  //
-
-  // for (let j = 0; j < links.length; j++) {
-  //   let href = await links[j].getProperty("href");
-  //   let hrefValue = await href.jsonValue();
-  //   txtFileLinks.push(hrefValue);
-  // }
-  // let homelink = links[0];
-  // links = links.slice(1, links.length);
-  // try {
-  //   for (let j = 0; j < links.length; j++) {
-  //     let href = await links[j].getProperty("href");
-  //     let hrefValue = await href.jsonValue();
-  //     txtFileLinks.push(hrefValue);
-  //   }
-  //   homelink.click();
-  //   await page.waitForNavigation();
-  // } catch (e) {
-  //   console.log("errore");
-  // }
 }
 
 async function getPageNumber() {
