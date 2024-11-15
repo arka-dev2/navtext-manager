@@ -15,7 +15,7 @@ function main() {
 
 function extractMessage() {
   for (let message of messages) {
-    let code = message.match(/\b[A-Z]{2}[0-9]{2}\b/g);
+    // let code = message.match(/\b[A-Z]{2}[0-9]{2}\b/g);
     let date = message.match(/\b[0-9]{6} UTC [A-Z]{3}\b/g);
     // let coordinates = null;
     let coordinates = message.match(
@@ -130,14 +130,13 @@ function extractMessage() {
 
     //----    codice da rimuovere    ----
     if (date === null) date = "290903 UTC DEC";
-    if (code === null || date === null || coordinates === null) {
+    if (date === null || coordinates === null) {
       //----    messaggi scartati    ----
-      discardedMessages.push({ message, code, date, coordinates });
+      discardedMessages.push({ message, date, coordinates });
     } else {
-      code = code !== null ? code[0] : code;
       date = date !== null ? date[0] : date;
       date += " " + year;
-      messegesOutput.push({ message, code, date, coordinates });
+      messegesOutput.push({ message, date, coordinates });
     }
   }
 }
@@ -176,3 +175,17 @@ function printDiscardedMessages() {
     outDiscCoord
   );
 }
+
+// function checkMessages() {
+//   for (let message of messages) {
+//     if (message.includes("</div>")) {
+//       let newMessage;
+//       const start = message.indexOf("<div");
+//       const end = message.lastIndexOf("</div>") + 6;
+//       console.log(end);
+//       newMessage =
+//         message.substring(0, start) + message.substring(end, message.length);
+//       console.log(newMessage);
+//     }
+//   }
+// }

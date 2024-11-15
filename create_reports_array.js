@@ -21,7 +21,6 @@ for (let message of messages) {
   const coordinates = [];
   const type = getTypeRandom();
   for (let coordinate of message.coordinates) {
-    console.log(coordinate);
     let stringLatitude = coordinate.match(
       /(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NS]/g
     );
@@ -76,6 +75,7 @@ function getAngle(angleStr) {
   const angle = Number(supp[0]) + Number(supp[1]) / 60;
   return direction * angle;
 }
+
 function getTypeRandom() {
   const numero = Math.floor(Math.random() * 5) + 1;
   switch (numero) {
@@ -91,6 +91,7 @@ function getTypeRandom() {
       return "danger";
   }
 }
+
 function getTime(hour, minute) {
   const desc = hour > 12 ? "PM" : "AM";
   hour = hour > 12 ? `${hour - 12}` : hour;
@@ -98,6 +99,7 @@ function getTime(hour, minute) {
   minute = minute < 10 ? `0${minute}` : minute;
   return `${hour}:${minute} ${desc}`;
 }
+
 function printReports() {
   let output = "[\n";
   for (let report of reports) output += "\t" + JSON.stringify(report) + ",\n";
