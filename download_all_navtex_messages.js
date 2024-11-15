@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 const axios = require("axios");
 const fs = require("fs");
 const messages = [];
-const linkNavTex = [];
+const linkNavTex = new Set();
 let page;
 
 (async () => {
@@ -28,7 +28,7 @@ async function getLinkNavtex() {
     for (let link of links) {
       let href = await link.getProperty("href");
       let hrefValue = await href.jsonValue();
-      linkNavTex.push(hrefValue);
+      linkNavTex.add(hrefValue);
     }
   }
 }
@@ -73,12 +73,7 @@ async function downloadMessages() {
 
 function writeMessagesInFile(fileUrl) {
   let output = "[\n";
-  for (let message of messages) {
-    // message = message.replaceAll("\n", " ").replaceAll("\r", "");
-    // if (!message.endsWith("NNNN"))
-    //   message = message.substring(0, message.length - 1);
-    output += '\t"' + message + '",\n';
-  }
-  output = output.substring(0, output.length - 2) + "\n]";
+  for (let message of messages) output += '\t"' + message + '",\n';
+  output = output + "\n]";
   fs.writeFileSync("messages_navtex/message.json", output);
 }
