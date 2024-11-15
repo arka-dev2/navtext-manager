@@ -18,7 +18,7 @@ let page;
 
 async function getLinkNavtex() {
   // const pageNumber = await getPageNumber();
-  const pageNumber = 40;
+  const pageNumber = 3;
   for (let i = 1; i <= pageNumber; i++) {
     console.log("pagina numero : " + i);
     await page.goto(`https://marinesafety.net/?query-52-page=${i}`);
@@ -74,6 +74,8 @@ async function downloadMessages() {
 function writeMessagesInFile(fileUrl) {
   let output = "[\n";
   for (let message of messages) output += '\t"' + message + '",\n';
-  output = output + "\n]";
+  if (output.length > 2)
+    output = output.substring(0, output.length - 2) + "\n]";
+  else output = output.substring(0, output.length - 1) + "]";
   fs.writeFileSync("messages_navtex/message.json", output);
 }
