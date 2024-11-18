@@ -2,6 +2,8 @@
 const puppeteer = require("puppeteer");
 const axios = require("axios");
 const fs = require("fs");
+const cliProgress = require("cli-progress");
+
 const messages = [];
 const linkNavTex = new Set();
 let page;
@@ -17,10 +19,16 @@ let page;
 })();
 
 async function getLinkNavtex() {
-  // const pageNumber = await getPageNumber();
-  const pageNumber = 3;
+  const data = {};
+  // let pageNumber = await getPageNumber();
+  let pageNumber = 100;
+
+  data.totalStep = pageNumber;
+  data.currentStep = 0;
+  createProgressBar(data, "pagine");
+
   for (let i = 1; i <= pageNumber; i++) {
-    console.log("pagina numero : " + i);
+    data.currentStep = i;
     await page.goto(`https://marinesafety.net/?query-52-page=${i}`);
     let links = await page.$$(
       "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div > div:nth-child(3) > h4 > a"
@@ -39,7 +47,7 @@ async function getPageNumber() {
     "body > div.wp-site-blocks > div > div:nth-child(2) > div > nav > div > a:nth-child(5)"
   );
   const innerHTML = await page.evaluate((el) => el.innerHTML, element);
-  const pageNumber = Number(innerHTML.replaceAll(",", "."));
+  const pageNumber = Number(innerHTML.replaceAll(",", ""));
   return pageNumber;
 }
 
@@ -78,4 +86,26 @@ function writeMessagesInFile(fileUrl) {
     output = output.substring(0, output.length - 2) + "\n]";
   else output = output.substring(0, output.length - 1) + "]";
   fs.writeFileSync("messages_navtex/message.json", output);
+}
+
+function createProgressBar(data, desc) {
+  const progressBar = new cliProgress.SingleBar({
+    format: "Progress |{bar}| {value}/{total} " + desc,
+    barCompleteChar: "\u2588", // carattere per la parte completata
+    barIncompleteChar: "\u2591", // carattere per la parte incompleta
+    hideCursor: false, // nasconde il cursore durante l'esecuzione
+  });
+
+  // Imposta il totale
+  progressBar.start(data.totalStep, data.currentStep); // inizializza con valore iniziale 0
+
+  // Simula un processo incrementale
+  const interval = setInterval(() => {
+    progressBar.update(data.currentStep);
+    if (data.currentStep >= data.totalStep) {
+      clearInterval(interval);
+      progressBar.stop();
+      console.log("Processo completato!");
+    }
+  }, 100);
 }
