@@ -65,20 +65,24 @@ async function downloadMessages() {
 
   //----    inizializzazione della progressbar    ----
   const data = {};
-  data.totalStep = linkNavTex.length;
+  data.totalStep = navtexObj.length;
   data.currentStep = 0;
   createProgressBar(data, "messaggi");
 
-  for (let hrefValue of linkNavTex) {
+  for (let obj of navtexObj) {
     data.currentStep++;
     try {
-      const { data: html } = await axios.get(hrefValue);
+      const publicationDate = obj.date;
+      const type = obj.type;
+
+      const { data: html } = await axios.get(obj.link);
       const $ = cheerio.load(html);
       let message = $(
         "div.entry-content.alignfull.wp-block-post-content.is-layout-constrained.wp-block-post-content-is-layout-constrained"
       ).text();
       message = message.replaceAll("\n", " ");
-      messages.push(message);
+
+      messages.push({ publicationDate, type, message });
     } catch (e) {
       console.log(e);
     }
@@ -87,7 +91,8 @@ async function downloadMessages() {
 
 function writeMessagesInFile(fileUrl) {
   let output = "[\n";
-  for (let message of messages) output += '\t"' + message + '",\n';
+  for (let message of messages)
+    output += "\t" + JSON.stringify(message) + ",\n";
   if (output.length > 2)
     output = output.substring(0, output.length - 2) + "\n]";
   else output = output.substring(0, output.length - 1) + "]";
@@ -97,15 +102,13 @@ function writeMessagesInFile(fileUrl) {
 function createProgressBar(data, desc) {
   const progressBar = new cliProgress.SingleBar({
     format: "Progress |{bar}| {value}/{total} " + desc,
-    barCompleteChar: "\u2588", // carattere per la parte completata
-    barIncompleteChar: "\u2591", // carattere per la parte incompleta
-    hideCursor: false, // nasconde il cursore durante l'esecuzione
+    barCompleteChar: "\u2588",
+    barIncompleteChar: "\u2591",
+    hideCursor: false,
   });
 
-  // Imposta il totale
-  progressBar.start(data.totalStep, data.currentStep); // inizializza con valore iniziale 0
+  progressBar.start(data.totalStep, data.currentStep);
 
-  // Simula un processo incrementale
   const interval = setInterval(() => {
     progressBar.update(data.currentStep);
     if (data.currentStep >= data.totalStep) {
