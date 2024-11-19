@@ -1,22 +1,16 @@
-//lo script scarica i navtex solo di oggi
-const puppeteer = require("puppeteer");
-const axios = require("axios");
-const fs = require("fs");
+//lo script scarica tutti i navtex dal sito marine safety
 const cliProgress = require("cli-progress");
 const cheerio = require("cheerio");
+const axios = require("axios");
+const fs = require("fs");
 
 const messages = [];
 let navtexObj = new Set();
-let page;
 
 (async () => {
-  const browser = await puppeteer.launch();
-  page = await browser.newPage();
   await getLinkNavtex();
   await downloadMessages();
   writeMessagesInFile();
-
-  await browser.close();
 })();
 
 async function getLinkNavtex() {
@@ -29,31 +23,38 @@ async function getLinkNavtex() {
   createProgressBar(data, "pagine");
 
   for (let i = 1; i <= pageNumber; i++) {
-    data.currentStep = i;
-    await page.goto(`https://marinesafety.net/?query-52-page=${i}`);
-    let divs = await page.$$(
-      "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div "
-    );
-    for (let div of divs) {
-      const htmlContent = await div.evaluate((el) => el.outerHTML);
-      let $ = cheerio.load(htmlContent);
+    data.currentStep++;
+    try {
+      const { data: html } = await axios.get(
+        `https://marinesafety.net/?query-52-page=${i}`
+      );
+      const $ = cheerio.load(html);
+      const divs = $(
+        "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div"
+      );
+      $(divs).each((index, div) => {
+        const links = $(div).find("a");
 
-      const date = $("a").eq(0).text();
-      const type = $("a").eq(1).text();
-      const link = $("a").eq(2).attr("href");
+        const date = links.eq(0).text();
+        const type = links.eq(1).text();
+        const link = links.eq(2).attr("href");
 
-      navtexObj.add(JSON.stringify({ date, type, link }));
+        navtexObj.add(JSON.stringify({ date, type, link }));
+      });
+    } catch (error) {
+      console.error("Errore nel caricamento della pagina:", error.message);
     }
   }
   navtexObj = convertToObject(navtexObj);
 }
 
 async function getPageNumber() {
-  await page.goto(`https://marinesafety.net/`);
-  const element = await page.$(
+  const { data: html } = await axios.get(`https://marinesafety.net/`);
+  const $ = cheerio.load(html);
+  const element = $(
     "body > div.wp-site-blocks > div > div:nth-child(2) > div > nav > div > a:nth-child(5)"
   );
-  const innerHTML = await page.evaluate((el) => el.innerHTML, element);
+  const innerHTML = element.text();
   const pageNumber = Number(innerHTML.replaceAll(",", ""));
   return pageNumber;
 }
@@ -71,25 +72,15 @@ async function downloadMessages() {
   for (let hrefValue of linkNavTex) {
     data.currentStep++;
     try {
-      await page.goto(hrefValue);
-      const elements = await page.$$(
-        "#wp--skip-link--target > div > div.wp-block-column.is-layout-constrained.wp-block-column-is-layout-constrained > div.vertical-overlap.wp-block-group.has-header-background-color.has-black-background-color.has-text-color.has-background.has-link-color.wp-elements-36612680afc3b1e1f28572441719f0a2.is-layout-constrained.wp-container-core-group-is-layout-6.wp-block-group-is-layout-constrained > div.entry-content.alignfull.wp-block-post-content.is-layout-constrained.wp-block-post-content-is-layout-constrained > p"
-      );
-      let message = "";
-      for (let element of elements) {
-        message += await page.evaluate((el) => el.innerHTML, element);
-      }
-      message = message.replaceAll("<br>", "");
+      const { data: html } = await axios.get(hrefValue);
+      const $ = cheerio.load(html);
+      let message = $(
+        "div.entry-content.alignfull.wp-block-post-content.is-layout-constrained.wp-block-post-content-is-layout-constrained"
+      ).text();
       message = message.replaceAll("\n", " ");
-      if (message.includes("</div>")) {
-        const start = message.indexOf("<div");
-        const end = message.lastIndexOf("</div>") + 6;
-        message =
-          message.substring(0, start) + message.substring(end, message.length);
-      }
       messages.push(message);
     } catch (e) {
-      console.log("errore");
+      console.log(e);
     }
   }
 }
