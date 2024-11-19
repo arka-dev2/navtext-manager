@@ -19,10 +19,10 @@ let page;
 })();
 
 async function getLinkNavtex() {
-  const data = {};
-  // let pageNumber = await getPageNumber();
-  let pageNumber = 100;
+  let pageNumber = await getPageNumber();
 
+  //----    inizializzazione della progressbar    ----
+  const data = {};
   data.totalStep = pageNumber;
   data.currentStep = 0;
   createProgressBar(data, "pagine");
@@ -52,9 +52,16 @@ async function getPageNumber() {
 }
 
 async function downloadMessages() {
-  let count = 0;
+  console.log("download dei messaggi");
+
+  //----    inizializzazione della progressbar    ----
+  const data = {};
+  data.totalStep = linkNavTex.length;
+  data.currentStep = 0;
+  createProgressBar(data, "messaggi");
+
   for (let hrefValue of linkNavTex) {
-    console.log(count++);
+    data.currentStep++;
     try {
       await page.goto(hrefValue);
       const elements = await page.$$(
@@ -105,7 +112,7 @@ function createProgressBar(data, desc) {
     if (data.currentStep >= data.totalStep) {
       clearInterval(interval);
       progressBar.stop();
-      console.log("Processo completato!");
+      console.log("completato!");
     }
   }, 100);
 }
