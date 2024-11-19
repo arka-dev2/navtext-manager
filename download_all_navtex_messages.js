@@ -3,9 +3,10 @@ const puppeteer = require("puppeteer");
 const axios = require("axios");
 const fs = require("fs");
 const cliProgress = require("cli-progress");
+const cheerio = require("cheerio");
 
 const messages = [];
-const linkNavTex = new Set();
+let navtexObj = new Set();
 let page;
 
 (async () => {
@@ -30,15 +31,21 @@ async function getLinkNavtex() {
   for (let i = 1; i <= pageNumber; i++) {
     data.currentStep = i;
     await page.goto(`https://marinesafety.net/?query-52-page=${i}`);
-    let links = await page.$$(
-      "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div > div:nth-child(3) > h4 > a"
+    let divs = await page.$$(
+      "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div "
     );
-    for (let link of links) {
-      let href = await link.getProperty("href");
-      let hrefValue = await href.jsonValue();
-      linkNavTex.add(hrefValue);
+    for (let div of divs) {
+      const htmlContent = await div.evaluate((el) => el.outerHTML);
+      let $ = cheerio.load(htmlContent);
+
+      const date = $("a").eq(0).text();
+      const type = $("a").eq(1).text();
+      const link = $("a").eq(2).attr("href");
+
+      navtexObj.add(JSON.stringify({ date, type, link }));
     }
   }
+  navtexObj = convertToObject(navtexObj);
 }
 
 async function getPageNumber() {
@@ -53,6 +60,7 @@ async function getPageNumber() {
 
 async function downloadMessages() {
   console.log("download dei messaggi");
+  const linkNavTex = navtexObj.map((el) => el.link);
 
   //----    inizializzazione della progressbar    ----
   const data = {};
@@ -115,4 +123,12 @@ function createProgressBar(data, desc) {
       console.log("completato!");
     }
   }, 100);
+}
+
+function convertToObject(objs) {
+  const arr = [];
+  for (let obj of objs) {
+    arr.push(JSON.parse(obj));
+  }
+  return arr;
 }
