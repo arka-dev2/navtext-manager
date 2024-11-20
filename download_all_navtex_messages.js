@@ -2,7 +2,6 @@
 const cliProgress = require("cli-progress");
 const cheerio = require("cheerio");
 const axios = require("axios");
-const fs = require("fs");
 const messageDAO = require("./Dao/MessageDAO.js");
 const conn = require("./conn");
 
@@ -24,12 +23,17 @@ async function getLinkNavtex() {
   let pageNumber = 1;
 
   //----    inizializzazione della progressbar    ----
-  const data = {};
-  data.totalStep = pageNumber;
-  data.currentStep = 0;
-  createProgressBar(data, "pagine");
+  const dataProgressBar = {};
+  dataProgressBar.totalStep = pageNumber;
+  dataProgressBar.currentStep = 0;
+  const progressBar = createProgressBar(
+    dataProgressBar,
+    "pagine",
+    "searching dei link"
+  );
 
   for (let i = 1; i <= pageNumber; i++) {
+    progressBar.update(dataProgressBar.currentStep++);
     data.currentStep++;
     try {
       const { data: html } = await axios.get(
@@ -53,6 +57,7 @@ async function getLinkNavtex() {
     }
   }
   navtexObj = convertToObject(navtexObj);
+  console.log("completato !!!");
 }
 
 async function getPageNumber() {
@@ -67,17 +72,18 @@ async function getPageNumber() {
 }
 
 async function downloadMessages() {
-  console.log("download dei messaggi");
-  const linkNavTex = navtexObj.map((el) => el.link);
-
   //----    inizializzazione della progressbar    ----
-  const data = {};
-  data.totalStep = navtexObj.length;
-  data.currentStep = 0;
-  createProgressBar(data, "messaggi");
+  const dataProgressBar = {};
+  dataProgressBar.totalStep = navtexObj.length;
+  dataProgressBar.currentStep = 0;
+  const progressBar = createProgressBar(
+    dataProgressBar,
+    "messaggi",
+    "download dei messaggi"
+  );
 
   for (let obj of navtexObj) {
-    data.currentStep++;
+    progressBar.update(dataProgressBar.currentStep++);
     try {
       const link = obj.link;
       const publicationDate = obj.date;
@@ -95,13 +101,15 @@ async function downloadMessages() {
       console.log(e);
     }
   }
+  console.log("completato !!!");
 }
 
 function insertMessageIntoDB() {
   messageDAO.insertAllMessage(messages);
 }
 
-function createProgressBar(data, desc) {
+function createProgressBar(data, desc, message) {
+  console.log(message);
   const progressBar = new cliProgress.SingleBar({
     format: "Progress |{bar}| {value}/{total} " + desc,
     barCompleteChar: "\u2588",
@@ -110,15 +118,7 @@ function createProgressBar(data, desc) {
   });
 
   progressBar.start(data.totalStep, data.currentStep);
-
-  const interval = setInterval(() => {
-    progressBar.update(data.currentStep);
-    if (data.currentStep >= data.totalStep) {
-      clearInterval(interval);
-      progressBar.stop();
-      console.log("completato!");
-    }
-  }, 100);
+  return progressBar;
 }
 
 function convertToObject(objs) {
