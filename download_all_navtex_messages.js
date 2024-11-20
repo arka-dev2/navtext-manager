@@ -3,6 +3,8 @@ const cliProgress = require("cli-progress");
 const cheerio = require("cheerio");
 const axios = require("axios");
 const fs = require("fs");
+const messageDAO = require("./Dao/MessageDAO.js");
+const conn = require("./conn");
 
 const messages = [];
 let navtexObj = new Set();
@@ -10,11 +12,16 @@ let navtexObj = new Set();
 (async () => {
   await getLinkNavtex();
   await downloadMessages();
-  writeMessagesInFile();
+  insertMessageIntoDB();
+  conn.end((err) => {
+    if (err) console.log("Errore chiusura connessione:", err);
+    else console.log("Connessione chiusa.");
+  });
 })();
 
 async function getLinkNavtex() {
-  let pageNumber = await getPageNumber();
+  // let pageNumber = await getPageNumber();
+  let pageNumber = 1;
 
   //----    inizializzazione della progressbar    ----
   const data = {};
@@ -72,31 +79,26 @@ async function downloadMessages() {
   for (let obj of navtexObj) {
     data.currentStep++;
     try {
+      const link = obj.link;
       const publicationDate = obj.date;
       const type = obj.type;
 
-      const { data: html } = await axios.get(obj.link);
+      const { data: html } = await axios.get(link);
       const $ = cheerio.load(html);
-      let message = $(
+      let text = $(
         "div.entry-content.alignfull.wp-block-post-content.is-layout-constrained.wp-block-post-content-is-layout-constrained"
       ).text();
-      message = message.replaceAll("\n", " ");
+      text = text.replaceAll("\n", " ");
 
-      messages.push({ publicationDate, type, message });
+      messages.push({ link, publicationDate, type, text });
     } catch (e) {
       console.log(e);
     }
   }
 }
 
-function writeMessagesInFile(fileUrl) {
-  let output = "[\n";
-  for (let message of messages)
-    output += "\t" + JSON.stringify(message) + ",\n";
-  if (output.length > 2)
-    output = output.substring(0, output.length - 2) + "\n]";
-  else output = output.substring(0, output.length - 1) + "]";
-  fs.writeFileSync("messages_navtex/message.json", output);
+function insertMessageIntoDB() {
+  messageDAO.insertAllMessage(messages);
 }
 
 function createProgressBar(data, desc) {
