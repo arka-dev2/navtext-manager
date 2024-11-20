@@ -1,4 +1,3 @@
-// MyClass.js
 class Message {
   constructor(link, pubblicationDate, type, message) {
     this.link = link;
@@ -8,5 +7,4 @@ class Message {
   }
 }
 
-// Esportare la classe
 module.exports = Message;
