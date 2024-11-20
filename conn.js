@@ -1,6 +1,6 @@
-const mysql = require("mysql");
+const Mysql = require("sync-mysql");
 
-const conn = mysql.createConnection({
+const conn = new Mysql({
   host: "localhost",
   user: "root",
   password: "",
