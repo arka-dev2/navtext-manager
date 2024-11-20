@@ -17,8 +17,7 @@ let navtexObj = new Set();
 })();
 
 async function getLinkNavtex() {
-  // let pageNumber = await getPageNumber();
-  let pageNumber = 1;
+  let pageNumber = await getPageNumber();
 
   //----    inizializzazione della progressbar    ----
   const dataProgressBar = {};
