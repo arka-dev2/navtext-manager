@@ -10,12 +10,10 @@ let navtexObj = new Set();
 
 (async () => {
   await getLinkNavtex();
+  await checkNavtexLink();
   await downloadMessages();
   insertMessageIntoDB();
-  conn.end((err) => {
-    if (err) console.log("Errore chiusura connessione:", err);
-    else console.log("Connessione chiusa.");
-  });
+  conn.dispose();
 })();
 
 async function getLinkNavtex() {
@@ -128,4 +126,26 @@ function convertToObject(objs) {
     arr.push(JSON.parse(obj));
   }
   return arr;
+}
+
+async function checkNavtexLink() {
+  //----    inizializzazione della progressbar    ----
+  const dataProgressBar = {};
+  dataProgressBar.totalStep = navtexObj.length;
+  dataProgressBar.currentStep = 0;
+  const progressBar = createProgressBar(
+    dataProgressBar,
+    "link",
+    "check dell'esistenza dei link"
+  );
+
+  const newNavtexObj = [];
+  for (let obj of navtexObj) {
+    const message = messageDAO.getMessage(obj.link);
+    if (message === null) newNavtexObj.push(obj);
+    progressBar.update(++dataProgressBar.currentStep);
+  }
+  navtexObj = newNavtexObj;
+  progressBar.stop();
+  console.log("completato !!!");
 }
