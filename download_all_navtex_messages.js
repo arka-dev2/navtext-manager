@@ -33,8 +33,6 @@ async function getLinkNavtex() {
   );
 
   for (let i = 1; i <= pageNumber; i++) {
-    progressBar.update(dataProgressBar.currentStep++);
-    data.currentStep++;
     try {
       const { data: html } = await axios.get(
         `https://marinesafety.net/?query-52-page=${i}`
@@ -55,8 +53,10 @@ async function getLinkNavtex() {
     } catch (error) {
       console.error("Errore nel caricamento della pagina:", error.message);
     }
+    progressBar.update(++dataProgressBar.currentStep);
   }
   navtexObj = convertToObject(navtexObj);
+  progressBar.stop();
   console.log("completato !!!");
 }
 
@@ -83,7 +83,6 @@ async function downloadMessages() {
   );
 
   for (let obj of navtexObj) {
-    progressBar.update(dataProgressBar.currentStep++);
     try {
       const link = obj.link;
       const publicationDate = obj.date;
@@ -100,7 +99,9 @@ async function downloadMessages() {
     } catch (e) {
       console.log(e);
     }
+    progressBar.update(++dataProgressBar.currentStep);
   }
+  progressBar.stop();
   console.log("completato !!!");
 }
 
