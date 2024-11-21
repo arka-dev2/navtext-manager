@@ -43,7 +43,7 @@ class MessageDAO {
       "insert into messages (link, publication_date, type, text) values(?,?,?,?)";
     const values = [
       message.link,
-      message.pubblicationDate,
+      message.publicationDate,
       message.type,
       message.text,
     ];
