@@ -5,6 +5,7 @@ const messageDAO = require("./Dao/MessageDAO.js");
 const conn = require("./conn");
 
 (async () => {
+  const linkDB = messageDAO.getAllMessage().map((el) => el.link);
   const pageDetected = new PageDetected();
   let pageNumber = await pageDetected.getPageNumber();
   const progressBar = new ProgressBar(
@@ -18,7 +19,7 @@ const conn = require("./conn");
       const link = `https://marinesafety.net/?query-52-page=${i}`;
       const navtexObjArr = await pageDetected.getNavtexObjArr(link);
       for (let navtexObj of navtexObjArr) {
-        if (!existNavtexLink(navtexObj.link)) {
+        if (!linkDB.includes(navtexObj.link)) {
           const link = navtexObj.link;
           const publicationDate = navtexObj.date;
           const type = navtexObj.type;
@@ -36,7 +37,3 @@ const conn = require("./conn");
   progressBar.complete();
   conn.dispose();
 })();
-
-function existNavtexLink(link) {
-  return (message = messageDAO.getMessage(link) !== null);
-}
