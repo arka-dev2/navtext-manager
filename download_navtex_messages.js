@@ -4,7 +4,7 @@ const ProgressBar = require("./Object/ProgressBar.js");
 const messageDAO = require("./Dao/MessageDAO.js");
 const conn = require("./conn.js");
 
-(async () => {
+async function main() {
   const linkDB = messageDAO.getAllMessage().map((el) => el.link);
   const pageDetected = new PageDetected();
   let pageNumber = await pageDetected.getPageNumber2(linkDB);
@@ -35,4 +35,9 @@ const conn = require("./conn.js");
   }
   progressBar.complete();
   conn.dispose();
-})();
+}
+
+main();
+setInterval(() => {
+  main();
+}, 3600000);
