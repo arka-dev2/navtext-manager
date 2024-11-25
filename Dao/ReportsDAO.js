@@ -1,4 +1,4 @@
-const conn = require("../conn");
+const conn = require("../Object/conn");
 const Report = require("../Entity/Report");
 
 class ReportsDAO {

@@ -2,7 +2,7 @@
 const PageDetected = require("./Object/PageDetected.js");
 const ProgressBar = require("./Object/ProgressBar.js");
 const messageDAO = require("./Dao/MessageDAO.js");
-const conn = require("./conn");
+const conn = require("./Object/conn.js");
 
 (async () => {
   const linkDB = messageDAO.getAllMessage().map((el) => el.link);
