@@ -1,17 +1,23 @@
-class Utility {
-  getTypeRandom() {
-    const numero = Math.floor(Math.random() * 5) + 1;
-    switch (numero) {
-      case 1:
-        return "pollution";
-      case 2:
-        return "casualties";
-      case 3:
-        return "environment risk";
-      case 4:
-        return "floating objects";
-      case 5:
-        return "danger";
+const reportsDAO = require("../Dao/ReportsDAO.js");
+const Report = require("../Entity/Report");
+
+class ReportManager {
+  estractReport(text) {
+    const report = {};
+    let date = text.match(/\b[0-9]{6}Z [A-Z]{3} [0-9]{2}\b/g);
+    let coordinates = text.match(
+      /(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NSEW]\s+(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NSEW]/g
+    );
+
+    if ((date !== null) & (coordinates !== null)) {
+      const coordinatesList = [];
+      date = this.getDate(date[0]);
+
+      for (let coordinate of coordinates) {
+        coordinatesList.push(this.getCoordinates(coordinate));
+      }
+
+      report = new Report(message.link, message.type, date, coordinatesList);
     }
   }
 
@@ -87,6 +93,10 @@ class Utility {
     const angle = Number(supp[0]) + Number(supp[1]) / 60;
     return direction * angle;
   }
+
+  insertIntoDB(report) {
+    reportsDAO.insertReport(report);
+  }
 }
 
-module.exports = new Utility();
+module.exports = new ReportManager();
