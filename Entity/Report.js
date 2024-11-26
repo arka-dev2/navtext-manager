@@ -1,6 +1,5 @@
 class Report {
-  constructor(id, link, type, date, coordinates) {
-    this.id = id;
+  constructor(link, type, date, coordinates) {
     this.link = link;
     this.type = type;
     this.date = date;
