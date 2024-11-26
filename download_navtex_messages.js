@@ -5,8 +5,7 @@ const reportManager = require("./Object/ReportManager.js");
 const conn = require("./Object/conn");
 
 async function main() {
-  // const pageNumber = await messageManager.getPageNumber();
-  const pageNumber = 1;
+  const pageNumber = await messageManager.getPageNumber();
   const progressBar = new ProgressBar(
     pageNumber,
     "pagine",
@@ -18,8 +17,10 @@ async function main() {
       const messages = await messageManager.getMessageInPage(i);
       messageManager.insertIntoDB(messages);
       for (let message of messages) {
-        const report = reportManager.estractReport(message.text);
-        if (report) reportManager.insertIntoDB(report);
+        if (messageManager.checkMessage(message)) {
+          const report = reportManager.estractReport(message);
+          if (report !== null) reportManager.insertIntoDB(report);
+        }
       }
     } catch (err) {
       console.error("Errore nel caricamento della pagina:", err);
@@ -31,6 +32,6 @@ async function main() {
 }
 
 main();
-// setInterval(() => {
-//   main();
-// }, 3600000);
+setInterval(() => {
+  main();
+}, 3600000);

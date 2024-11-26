@@ -2,10 +2,10 @@ const reportsDAO = require("../Dao/ReportsDAO.js");
 const Report = require("../Entity/Report");
 
 class ReportManager {
-  estractReport(text) {
-    const report = {};
-    let date = text.match(/\b[0-9]{6}Z [A-Z]{3} [0-9]{2}\b/g);
-    let coordinates = text.match(
+  estractReport(message) {
+    let report = null;
+    let date = message.text.match(/\b[0-9]{6}Z [A-Z]{3} [0-9]{2}\b/g);
+    let coordinates = message.text.match(
       /(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NSEW]\s+(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NSEW]/g
     );
 
@@ -19,6 +19,7 @@ class ReportManager {
 
       report = new Report(message.link, message.type, date, coordinatesList);
     }
+    return report;
   }
 
   getDate(dateString) {

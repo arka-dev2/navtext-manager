@@ -18,10 +18,14 @@ class MessageManager {
 
   async insertIntoDB(messages) {
     for (let message of messages) {
-      if (!this.linkDB.includes(message.link)) {
+      if (this.checkMessage(message)) {
         messageDAO.insertMessage(message);
       }
     }
+  }
+
+  checkMessage(message) {
+    return !this.linkDB.includes(message.link);
   }
 }
 
