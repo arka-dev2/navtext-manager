@@ -1,6 +1,5 @@
 const messageDAO = require("../Dao/MessageDAO.js");
 const PageDetected = require("./PageDetected.js");
-const axios = require("axios");
 
 class MessageManager {
   constructor() {
@@ -23,10 +22,6 @@ class MessageManager {
         messageDAO.insertMessage(message);
       }
     }
-  }
-
-  close() {
-    conn.dispose();
   }
 }
 
