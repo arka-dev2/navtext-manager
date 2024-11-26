@@ -2,10 +2,10 @@ const cheerio = require("cheerio");
 const axios = require("axios");
 
 class PageDetected {
-  async getNavtexObjArr(pageUrl) {
+  async getMessagesArr(pageUrl) {
     const { data: html } = await axios.get(pageUrl);
     const $ = cheerio.load(html);
-    const navtexObj = [];
+    const messages = [];
     const divs = $(
       "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div"
     );
@@ -13,13 +13,19 @@ class PageDetected {
     $(divs).each((index, div) => {
       const links = $(div).find("a");
 
-      const date = links.eq(0).text();
+      const publicationDate = links.eq(0).text();
       const type = links.eq(1).text();
       const link = links.eq(2).attr("href");
-      navtexObj.push({ date, type, link });
+
+      messages.push({ publicationDate, type, link });
     });
 
-    return navtexObj;
+    //----    Download dei messaggi    ----
+    for (let message of messages) {
+      message.text = await this.dawnloadNavtex(message.link);
+    }
+
+    return messages;
   }
 
   async getPageNumber() {
