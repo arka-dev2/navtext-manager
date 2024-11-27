@@ -39,8 +39,9 @@ class ReportsDAO {
   }
 
   insertReport(report) {
-    const query = "insert into reports (link, type, date) values(?,?,?)";
-    const values = [report.link, report.type, report.date];
+    const query =
+      "insert into reports (link, type, date, time) values(?,?,?,?)";
+    const values = [report.link, report.type, report.date, report.time];
     conn.query(query, values);
 
     let count = 1;

@@ -4,25 +4,31 @@ const Report = require("../Entity/Report");
 class ReportManager {
   estractReport(message) {
     let report = null;
-    let date = message.text.match(/\b[0-9]{6}Z [A-Z]{3} [0-9]{2}\b/g);
+    let dateSupp = message.text.match(/\b[0-9]{6}Z [A-Z]{3} [0-9]{2}\b/g);
     let coordinates = message.text.match(
       /(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NSEW]\s+(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NSEW]/g
     );
 
-    if ((date !== null) & (coordinates !== null)) {
+    if ((dateSupp !== null) & (coordinates !== null)) {
       const coordinatesList = [];
-      date = this.getDate(date[0]);
+      const { date, time } = this.getDateAndTime(dateSupp[0]);
 
       for (let coordinate of coordinates) {
         coordinatesList.push(this.getCoordinates(coordinate));
       }
 
-      report = new Report(message.link, message.type, date, coordinatesList);
+      report = new Report(
+        message.link,
+        message.type,
+        date,
+        time,
+        coordinatesList
+      );
     }
     return report;
   }
 
-  getDate(dateString) {
+  getDateAndTime(dateString) {
     let day = dateString.substring(0, 2);
     let hour = Number(dateString.substring(2, 4));
     let minute = Number(dateString.substring(4, 6));
@@ -34,7 +40,10 @@ class ReportManager {
     hour = hour < 10 ? `0${hour}` : hour;
     minute = minute < 10 ? `0${minute}` : minute;
 
-    return `${day}/${month}/${year}-${hour}:${minute} ${desc}`;
+    return {
+      date: `${day}/${month}/${year}`,
+      time: `${hour}:${minute} ${desc}`,
+    };
   }
 
   getCoordinates(coordinate) {
