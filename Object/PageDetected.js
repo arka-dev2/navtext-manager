@@ -23,6 +23,7 @@ class PageDetected {
     //----    Download dei messaggi    ----
     for (let message of messages) {
       message.text = await this.dawnloadNavtex(message.link);
+      message.navarea = this.getNavarea(message.text);
     }
 
     return messages;
@@ -80,6 +81,15 @@ class PageDetected {
     ).text();
     text = text.replaceAll("\n", " ");
     return text;
+  }
+
+  getNavarea(text) {
+    let navarea = "";
+    const navareaList = text.match(
+      /\bNAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)\b/g
+    );
+    if (navareaList !== null) navarea = navareaList[0];
+    return navarea;
   }
 }
 

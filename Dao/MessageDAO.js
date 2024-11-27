@@ -13,7 +13,8 @@ class MessageDAO {
         result.link,
         result.pubblication_date,
         result.type,
-        result.text
+        result.text,
+        result.navarea
       );
       messages.push(message);
     }
@@ -32,7 +33,8 @@ class MessageDAO {
         result[0].link,
         result[0].publication_date,
         result[0].type,
-        result[0].text
+        result[0].text,
+        result[0].navarea
       );
     }
     return message;
@@ -40,25 +42,27 @@ class MessageDAO {
 
   insertMessage(message) {
     const query =
-      "insert into messages (link, publication_date, type, text) values(?,?,?,?)";
+      "insert into messages (link, publication_date, type, text, navarea) values(?,?,?,?,?)";
     const values = [
       message.link,
       message.publicationDate,
       message.type,
       message.text,
+      message.navarea,
     ];
     conn.query(query, values);
   }
 
   insertAllMessage(messages) {
     const query =
-      "insert into messages (link, publication_date, type, text) values(?,?,?,?)";
+      "insert into messages (link, publication_date, type, text, navarea) values(?,?,?,?,?))";
     for (let message of messages) {
       const values = [
         message.link,
         message.publicationDate,
         message.type,
         message.text,
+        message.navarea,
       ];
       conn.query(query, values);
     }
