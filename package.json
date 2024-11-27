@@ -12,6 +12,7 @@
     "cheerio": "^1.0.0",
     "cli-progress": "^3.12.0",
     "key-value-file": "^1.0.10",
+    "loading-cli": "^1.1.2",
     "sync-mysql": "^3.0.1"
   }
 }

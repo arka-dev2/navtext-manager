@@ -1,5 +1,6 @@
 const messageDAO = require("../Dao/MessageDAO.js");
 const PageDetected = require("./PageDetected.js");
+const loading = require("loading-cli");
 
 class MessageManager {
   constructor() {
@@ -8,7 +9,10 @@ class MessageManager {
   }
 
   async getPageNumber() {
-    return await this.pageDetected.getPageNumber2(this.linkDB);
+    const load = loading("conteggio delle pagine").start();
+    const pageNumber = await this.pageDetected.getPageNumber2(this.linkDB);
+    load.stop();
+    return pageNumber;
   }
 
   async getMessageInPage(page) {
