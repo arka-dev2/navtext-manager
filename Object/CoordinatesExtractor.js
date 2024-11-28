@@ -82,6 +82,7 @@ class CoordinatesExtractor {
     }
     return coordinatesList;
   }
+
   // il formato di input che si aspetta é : 10 05.08 N
   #getAngle(angleStr) {
     const supp = angleStr.split(" ");

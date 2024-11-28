@@ -2,10 +2,11 @@ class DateExtractor {
   constructor() {
     this.regexs = [
       /\b(\d{2})(\d{2})(\d{2})Z (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2})\b/g,
-      /\b(\d{2}) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2}) TO (\d{2}) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2})\b/g,
+      /\b(\d{1,2}) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2}) TO (\d{1,2}) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2})\b/g,
       /\b(\d{2})(\d{2})(\d{2}) UTC (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2})\b/g,
-      /\b(\d{2}) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2}) from (\d{4})UTC to (\d{4})UTC\b/g,
-      /\b(\d{2}) (JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER) (\d{2}) from (\d{4})UTC to (\d{4})UTC\b/g,
+      /\b(\d{1,2}) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2}) from (\d{4})UTC to (\d{4})UTC\b/g,
+      /\b(\d{1,2}) (JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER) (\d{2}) from (\d{4})UTC to (\d{4})UTC\b/g,
+      /\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})\s+(?:TIME|time):\s+(\d{4})\s+UTC/g,
     ];
   }
 
@@ -122,8 +123,32 @@ class DateExtractor {
     return { date: output[0], time: output[1] };
   }
 
+  //gestione di questo formato : 21 Nov 2024 TIME: 0242 UTC
+  getDateFormat6(dateString) {
+    console.log(dateString);
+    let output = dateString.replace(
+      this.regexs[5],
+      (match, day, month, year, time) => {
+        console.log(time);
+        let hour = Number(time.substring(0, 2));
+        let minute = Number(time.substring(2, 4));
+
+        const desc = hour > 12 ? "PM" : "AM";
+        hour = hour > 12 ? `${hour - 12}` : hour;
+        hour = hour < 10 ? `0${hour}` : hour;
+        minute = minute < 10 ? `0${minute}` : minute;
+
+        const date = `${day}/${this.#getMonth1(month)}/${year}`;
+        const timeSupp = `${hour}:${minute} ${desc}`;
+        return `${date}-${timeSupp}`;
+      }
+    );
+    output = output.split("-");
+    return { date: output[0], time: output[1] };
+  }
+
   #getMonth1(stringMonth) {
-    switch (stringMonth) {
+    switch (stringMonth.toUpperCase()) {
       case "JAN":
         return "01";
       case "FEB":
