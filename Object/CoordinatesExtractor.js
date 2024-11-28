@@ -1,20 +1,19 @@
 class CoordinatesExtractor {
   constructor() {
-    this.regex1 =
-      /(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NSEW]\s+(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NSEW]/g;
-    this.regex2 =
-      /(\d{1,3})o\?=(\d{1,3})’(\d{1,3})\?([NSEW])\s*,\s*(\d{1,3})o\?=(\d{1,3})’(\d{1,3})\?([NSEW])/g;
+    this.regexs = [
+      /(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)([NSEW])\s+(\d{1,3})-(\d{1,3})(?:\.\d{1,3})?([NSEW])/g,
+      /(\d{1,3})o\?=(\d{1,3})’(\d{1,3})\?([NSEW])\s*,\s*(\d{1,3})o\?=(\d{1,3})’(\d{1,3})\?([NSEW])/g,
+    ];
   }
 
   getCoordinate(string) {
-    let coordinateExtract = string.match(this.regex1);
-    if (coordinateExtract !== null)
-      return this.getCoordinateFormat1(coordinateExtract);
-
-    coordinateExtract = string.match(this.regex2);
-    if (coordinateExtract !== null)
-      return this.getCoordinateFormat2(coordinateExtract);
-
+    let count = 1;
+    for (let regex of this.regexs) {
+      let coordinateExtract = string.match(regex);
+      if (coordinateExtract !== null)
+        return this["getCoordinateFormat" + count](coordinateExtract);
+      count++;
+    }
     return null;
   }
 
@@ -23,17 +22,14 @@ class CoordinatesExtractor {
     const coordinatesList = [];
 
     for (let coordinate of coordinateExtract) {
-      let stringLatitude = coordinate.match(
-        /(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[NS]/g
+      let latitude, longitude;
+      coordinate.replace(
+        this.regexs[0],
+        (match, latDeg, latMin, latDir, lonDeg, lonMin, lonDir) => {
+          latitude = this.#getAngle(`${latDeg} ${latMin} ${latDir}`);
+          longitude = this.#getAngle(`${lonDeg} ${lonMin} ${lonDir}`);
+        }
       );
-      let stringLongitude = coordinate.match(
-        /(\d{1,3})-(\d{1,3}(?:\.\d{1,3})?)[EW]/g
-      );
-      if (stringLatitude === null || stringLongitude === null) return null;
-      stringLatitude = stringLatitude[0];
-      stringLongitude = stringLongitude[0];
-      const latitude = this.#getAngle(stringLatitude);
-      const longitude = this.#getAngle(stringLongitude);
       coordinatesList.push({ latitude, longitude });
     }
 
@@ -43,9 +39,10 @@ class CoordinatesExtractor {
   //gestione di questo formato : 05o?=27’24?N , 052o?=40’00?W
   getCoordinateFormat2(coordinateExtract) {
     const coordinatesList = [];
+
     for (let coordinate of coordinateExtract) {
       let output = coordinate.replace(
-        this.regex2,
+        this.regexs[1],
         (
           match,
           latDeg,
@@ -73,15 +70,10 @@ class CoordinatesExtractor {
 
   // il formato di input che si aspetta é : 10-05.08N
   #getAngle(angleStr) {
-    let direction = 1;
-    const supp = angleStr.substring(0, angleStr.length - 1).split("-");
-    const directionStr = angleStr.substring(
-      angleStr.length - 1,
-      angleStr.length
-    );
-    if (directionStr === "S" || directionStr === "W") direction = -1;
-    const angle = Number(supp[0]) + Number(supp[1]) / 60;
-    return direction * angle;
+    const supp = angleStr.split(" ");
+    let direction = supp[2] === "S" || supp[2] === "W" ? -1 : 1;
+    const angle = direction * (Number(supp[0]) + Number(supp[1]) / 60);
+    return angle;
   }
 }
 
