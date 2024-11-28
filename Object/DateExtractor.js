@@ -125,7 +125,6 @@ class DateExtractor {
 
   //gestione di questo formato : 21 Nov 2024 TIME: 0242 UTC
   getDateFormat6(dateString) {
-    console.log(dateString);
     let output = dateString.replace(
       this.regexs[5],
       (match, day, month, year, time) => {
