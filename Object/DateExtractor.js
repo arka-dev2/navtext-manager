@@ -80,7 +80,6 @@ class DateExtractor {
 
   //gestione di questo formato : 31 OCT 24 from 0300UTC to 1600UTC
   getDateFormat4(dateString) {
-    console.log(dateString);
     let output = dateString.replace(
       this.regexs[3],
       (match, day, month, year, from, to) => {
@@ -92,7 +91,7 @@ class DateExtractor {
         hour = hour < 10 ? `0${hour}` : hour;
         minute = minute < 10 ? `0${minute}` : minute;
 
-        const date = `${day}/${this.#getMonth2(month)}/20${year}`;
+        const date = `${day}/${this.#getMonth1(month)}/20${year}`;
         const time = `${hour}:${minute} ${desc}`;
         return `${date}-${time}`;
       }
