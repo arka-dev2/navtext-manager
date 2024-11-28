@@ -23,6 +23,9 @@ class DateExtractor {
     dateExtract = string.match(this.regex4);
     if (dateExtract !== null) return this.getDateFormat4(dateExtract[0]);
 
+    dateExtract = string.match(this.regex5);
+    if (dateExtract !== null) return this.getDateFormat5(dateExtract[0]);
+
     return { date: null, time: null };
   }
 
@@ -31,7 +34,7 @@ class DateExtractor {
     let day = dateString.substring(0, 2);
     let hour = Number(dateString.substring(2, 4));
     let minute = Number(dateString.substring(4, 6));
-    let month = this.#getMonth(dateString.substring(8, 11));
+    let month = this.#getMonth1(dateString.substring(8, 11));
     let year = `20${dateString.substring(12, 14)}`;
 
     const desc = hour > 12 ? "PM" : "AM";
@@ -49,7 +52,7 @@ class DateExtractor {
   getDateFormat2(dateString) {
     dateString = dateString.split(" TO ")[0];
     let day = dateString.substring(0, 2);
-    let month = this.#getMonth(dateString.substring(3, 6));
+    let month = this.#getMonth1(dateString.substring(3, 6));
     let year = `20${dateString.substring(7, 9)}`;
     return {
       date: `${day}/${month}/${year}`,
@@ -62,7 +65,7 @@ class DateExtractor {
     let day = dateString.substring(0, 2);
     let hour = Number(dateString.substring(2, 4));
     let minute = Number(dateString.substring(4, 6));
-    let month = this.#getMonth(dateString.substring(11, 14));
+    let month = this.#getMonth1(dateString.substring(11, 14));
     let year = `20${dateString.substring(15, 17)}`;
 
     const desc = hour > 12 ? "PM" : "AM";
@@ -81,7 +84,7 @@ class DateExtractor {
     let day = dateString.substring(0, 2);
     let hour = Number(dateString.substring(15, 17));
     let minute = Number(dateString.substring(17, 19));
-    let month = this.#getMonth(dateString.substring(3, 6));
+    let month = this.#getMonth1(dateString.substring(3, 6));
     let year = `20${dateString.substring(7, 9)}`;
 
     const desc = hour > 12 ? "PM" : "AM";
@@ -95,7 +98,29 @@ class DateExtractor {
     };
   }
 
-  #getMonth(stringMonth) {
+  //gestione di questo formato : 05 SEPTEMBER 24 from 1100UTC to 2300UTC
+  getDateFormat5(dateString) {
+    let output = dateString.replace(
+      this.regex5,
+      (match, day, month, year, from, to) => {
+        let hour = Number(from.substring(0, 2));
+        let minute = Number(from.substring(2, 4));
+
+        const desc = hour > 12 ? "PM" : "AM";
+        hour = hour > 12 ? `${hour - 12}` : hour;
+        hour = hour < 10 ? `0${hour}` : hour;
+        minute = minute < 10 ? `0${minute}` : minute;
+
+        const date = `${day}/${this.#getMonth2(month)}/20${year}`;
+        const time = `${hour}:${minute} ${desc}`;
+        return `${date}-${time}`;
+      }
+    );
+    output = output.split("-");
+    return { date: output[0], time: output[1] };
+  }
+
+  #getMonth1(stringMonth) {
     switch (stringMonth) {
       case "JAN":
         return "01";
@@ -120,6 +145,37 @@ class DateExtractor {
       case "NOV":
         return "11";
       case "DEC":
+        return "12";
+      default:
+        return "";
+    }
+  }
+
+  #getMonth2(stringMonth) {
+    switch (stringMonth) {
+      case "JANUARY":
+        return "01";
+      case "FEBRUARY":
+        return "02";
+      case "MARCH":
+        return "03";
+      case "APRIL":
+        return "04";
+      case "MAY":
+        return "05";
+      case "JUNE":
+        return "06";
+      case "JULY":
+        return "07";
+      case "AUGUST":
+        return "08";
+      case "SEPTEMBER":
+        return "09";
+      case "OCTOBER":
+        return "10";
+      case "NOVEMBER":
+        return "11";
+      case "DECEMBER":
         return "12";
       default:
         return "";
