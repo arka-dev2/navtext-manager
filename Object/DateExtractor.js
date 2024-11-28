@@ -1,31 +1,22 @@
 class DateExtractor {
   constructor() {
-    this.regex1 =
-      /\b\d{6}Z (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\b/g;
-    this.regex2 =
-      /\b\d{2} (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2} TO \d{2} (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\b/g;
-    this.regex3 =
-      /\b\d{6} UTC (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\b/g;
-    this.regex4 =
-      /\b\d{2} (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2} from \d{4}UTC to \d{4}UTC\b/g;
+    this.regexs = [
+      /\b\d{6}Z (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\b/g,
+      /\b\d{2} (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2} TO \d{2} (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\b/g,
+      /\b\d{6} UTC (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\b/g,
+      /\b\d{2} (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2} from \d{4}UTC to \d{4}UTC\b/g,
+      /\b(\d{2}) (JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER) (\d{2}) from (\d{4})UTC to (\d{4})UTC\b/g,
+    ];
   }
 
   getDate(string) {
-    let dateExtract = string.match(this.regex1);
-    if (dateExtract !== null) return this.getDateFormat1(dateExtract[0]);
-
-    dateExtract = string.match(this.regex2);
-    if (dateExtract !== null) return this.getDateFormat2(dateExtract[0]);
-
-    dateExtract = string.match(this.regex3);
-    if (dateExtract !== null) return this.getDateFormat3(dateExtract[0]);
-
-    dateExtract = string.match(this.regex4);
-    if (dateExtract !== null) return this.getDateFormat4(dateExtract[0]);
-
-    dateExtract = string.match(this.regex5);
-    if (dateExtract !== null) return this.getDateFormat5(dateExtract[0]);
-
+    let count = 1;
+    for (let regex of this.regexs) {
+      let dateExtract = string.match(regex);
+      if (dateExtract !== null)
+        return this["getDateFormat" + count](dateExtract[0]);
+      count++;
+    }
     return { date: null, time: null };
   }
 
@@ -101,7 +92,7 @@ class DateExtractor {
   //gestione di questo formato : 05 SEPTEMBER 24 from 1100UTC to 2300UTC
   getDateFormat5(dateString) {
     let output = dateString.replace(
-      this.regex5,
+      this.regexs[5],
       (match, day, month, year, from, to) => {
         let hour = Number(from.substring(0, 2));
         let minute = Number(from.substring(2, 4));
