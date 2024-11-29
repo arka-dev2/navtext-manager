@@ -101,6 +101,42 @@ class DateExtractor {
           return `${date}-${timeSupp}`;
         },
       },
+      //gestione di questo formato : 0300 UTC 21 NOVEMBER 2024
+      {
+        regex:
+          /\b(\d{1,2})(\d{1,2})\s+UTC\s+(\d{1,2})\s+(JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER)\s+(\d{4})/g,
+        callback: (m, hour, minute, day, month, year) => {
+          hour = Number(hour);
+          minute = Number(minute);
+
+          const desc = hour > 12 ? "PM" : "AM";
+          hour = hour > 12 ? `${hour - 12}` : hour;
+          hour = hour < 10 ? `0${hour}` : hour;
+          minute = minute < 10 ? `0${minute}` : minute;
+
+          const date = `${day}/${this.#getMonth2(month)}/${year}`;
+          const timeSupp = `${hour}:${minute} ${desc}`;
+          return `${date}-${timeSupp}`;
+        },
+      },
+      //gestione di questo formato : 2024/11/05 from 1100UTC to 2300UTC
+      {
+        regex:
+          /\b(\d{1,4})\/(\d{1,2})\/(\d{1,2})\s+from\s+(\d{1,4})UTC\s+to\s+(\d{4})UTC/g,
+        callback: (m, year, month, day, from, to) => {
+          let hour = Number(from.substring(0, 2));
+          let minute = Number(from.substring(2, 4));
+
+          const desc = hour > 12 ? "PM" : "AM";
+          hour = hour > 12 ? `${hour - 12}` : hour;
+          hour = hour < 10 ? `0${hour}` : hour;
+          minute = minute < 10 ? `0${minute}` : minute;
+
+          const date = `${day}/${month}/${year}`;
+          const timeSupp = `${hour}:${minute} ${desc}`;
+          return `${date}-${timeSupp}`;
+        },
+      },
     ];
   }
 
