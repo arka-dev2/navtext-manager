@@ -1,10 +1,10 @@
 class CoordinatesExtractor {
   constructor() {
     this.arr = [
-      //gestione di questo formato : 11-56.70N 069-48.10W, 22 – 51.24S 014 – 29.52E
+      //gestione di questo formato : 11-56.70N 069-48.10W, 22 – 51.24S 014 – 29.52E, 26 – 06.45 S 014 – 57.31 E
       {
         regex:
-          /(\d{1,3})(?:\s)?(?:(–|-))(?:\s)?(\d{1,3}(?:\.\d{1,3})?)([NSEW])\s+(\d{1,3})(?:\s)?(?:(–|-))(?:\s)?(\d{1,3})(?:\.\d{1,3})?([NSEW])/g, //
+          /(\d{1,3})(?:\s)?(?:–|-)(?:\s)?(\d{1,3}(?:\.\d{1,3})?)(?:\s)([NSEW])\s+(\d{1,3})(?:\s)?(?:–|-)(?:\s)?(\d{1,3})(?:\.\d{1,3})?(?:\s)([NSEW])/g, //
         callback: (m, latDeg, latMin, latDir, lonDeg, lonMin, lonDir) => {
           return `${latDeg} ${latMin} ${latDir}-${lonDeg} ${lonMin} ${lonDir}`;
         },
