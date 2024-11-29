@@ -5,7 +5,7 @@ class DateExtractor {
       {
         regex:
           /\b(\d{2})(\d{2})(\d{2})Z (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2})\b/g,
-        callback: (match, day, hour, minute, month, year) => {
+        callback: (m, day, hour, minute, month, year) => {
           hour = Number(hour);
           minute = Number(minute);
 
@@ -33,7 +33,7 @@ class DateExtractor {
       {
         regex:
           /\b(\d{2})(\d{2})(\d{2}) UTC (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2})\b/g,
-        callback: (match, day, hour, minute, month, year) => {
+        callback: (m, day, hour, minute, month, year) => {
           hour = Number(hour);
           minute = Number(minute);
 
@@ -51,7 +51,7 @@ class DateExtractor {
       {
         regex:
           /\b(\d{1,2}) (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2}) from (\d{4})UTC to (\d{4})UTC\b/g,
-        callback: (match, day, month, year, from, to) => {
+        callback: (m, day, month, year, from, to) => {
           let hour = Number(from.substring(0, 2));
           let minute = Number(from.substring(2, 4));
 
@@ -69,7 +69,7 @@ class DateExtractor {
       {
         regex:
           /\b(\d{1,2}) (JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER) (\d{2}) from (\d{4})UTC to (\d{4})UTC\b/g,
-        callback: (match, day, month, year, from, to) => {
+        callback: (m, day, month, year, from, to) => {
           let hour = Number(from.substring(0, 2));
           let minute = Number(from.substring(2, 4));
 
@@ -87,8 +87,7 @@ class DateExtractor {
       {
         regex:
           /\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})\s+(?:TIME|time):\s+(\d{4})\s+UTC/g,
-        callback: (match, day, hour, minute, month, year) => {
-          console.log(time);
+        callback: (m, day, month, year, time) => {
           let hour = Number(time.substring(0, 2));
           let minute = Number(time.substring(2, 4));
 
