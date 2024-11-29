@@ -30,7 +30,7 @@ class CoordinatesExtractor {
       //gestione di questo formato : 05o?=33,59N 052o?=33,45W
       {
         regex:
-          /(\d{1,3})o\?=(\d{1,3},\d{1,3})([NSEW])\s(\d{1,3})o\?=(\d{1,3},\d{1,3})([NSEW])/g,
+          /(\d{1,3})o\?=(\d{1,3}(?:,\d{1,3})?)([NSEW])\s(?:–\s+)?(\d{1,3})o\?=(\d{1,3}(?:,\d{1,3})?)([NSEW])/g, //-\s(\d{1,3})o\?
         callback: (match, latDeg, latMin, latDir, lonDeg, lonMin, lonDir) => {
           return `${latDeg} ${latMin} ${latDir}-${lonDeg} ${lonMin} ${lonDir}`;
         },
