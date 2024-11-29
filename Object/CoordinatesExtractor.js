@@ -35,6 +35,13 @@ class CoordinatesExtractor {
           return `${latDeg} ${latMin} ${latDir}-${lonDeg} ${lonMin} ${lonDir}`;
         },
       },
+      //gestione di questo formato : 6937N 5651W
+      {
+        regex: /(\d{1,3})(\d{2})([NSEW])\s+(\d{1,3})(\d{2})([NSEW])/g,
+        callback: (match, latDeg, latMin, latDir, lonDeg, lonMin, lonDir) => {
+          return `${latDeg} ${latMin} ${latDir}-${lonDeg} ${lonMin} ${lonDir}`;
+        },
+      },
     ];
   }
 
