@@ -29,10 +29,10 @@ class DateExtractor {
           return `${date}-${time}`;
         },
       },
-      //gestione di questo formato : 192030 UTC APR 25
+      //gestione di questo formato : 192030 UTC APR 25, 111245 UTC MAR 2024
       {
         regex:
-          /\b(\d{2})(\d{2})(\d{2}) UTC (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2})\b/g,
+          /\b(\d{2})(\d{2})(\d{2}) UTC (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2}|\d{4})\b/g, //
         callback: (m, day, hour, minute, month, year) => {
           hour = Number(hour);
           minute = Number(minute);
@@ -41,8 +41,9 @@ class DateExtractor {
           hour = hour > 12 ? `${hour - 12}` : hour;
           hour = hour < 10 ? `0${hour}` : hour;
           minute = minute < 10 ? `0${minute}` : minute;
+          year = year.length === 4 ? year : `20${year}`;
 
-          const date = `${day}/${this.#getMonth1(month)}/20${year}`;
+          const date = `${day}/${this.#getMonth1(month)}/${year}`;
           const time = `${hour}:${minute} ${desc}`;
           return `${date}-${time}`;
         },
