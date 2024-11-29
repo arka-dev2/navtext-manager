@@ -49,7 +49,6 @@ class CoordinatesExtractor {
     for (let obj of this.arr) {
       let coordinateExtract = string.match(obj.regex);
       if (coordinateExtract !== null) {
-        console.log(coordinateExtract);
         const coordinatesList = [];
 
         for (let coordinate of coordinateExtract) {

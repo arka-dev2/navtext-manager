@@ -156,6 +156,36 @@ class DateExtractor {
           return `${date}-${timeSupp}`;
         },
       },
+      //gestione di questo formato : 0145 UTC AND 0430 UTC FROM 23 NOV 2024 TO 06 DEC 2024
+      {
+        regex:
+          /\b(\d{4})\s+UTC\s+AND\s+(\d{4})\s+UTC\s+FROM\s+(\d{2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})\s+TO\s+(\d{2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})\b/g, //
+        callback: (
+          m,
+          from,
+          to,
+          dayFrom,
+          monthFrom,
+          yearFrom,
+          dayTo,
+          monthTo,
+          yearTo
+        ) => {
+          let hour = Number(from.substring(0, 2));
+          let minute = Number(from.substring(2, 4));
+
+          const desc = hour > 12 ? "PM" : "AM";
+          hour = hour > 12 ? `${hour - 12}` : hour;
+          hour = hour < 10 ? `0${hour}` : hour;
+          minute = minute < 10 ? `0${minute}` : minute;
+
+          const date = `${dayFrom}/${
+            (this, this.#getMonth1(monthFrom))
+          }/20${yearFrom}`;
+          const timeSupp = `${hour}:${minute} ${desc}`;
+          return `${date}-${timeSupp}`;
+        },
+      },
     ];
   }
 
