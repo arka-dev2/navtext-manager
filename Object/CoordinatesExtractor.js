@@ -42,6 +42,13 @@ class CoordinatesExtractor {
           return `${latDeg} ${latMin} ${latDir}-${lonDeg} ${lonMin} ${lonDir}`;
         },
       },
+      //gestione di questo formato : 50N12W
+      {
+        regex: /(\d{1,3})([NSEW])(?:\s+)?(\d{1,3})([NSEW])/g,
+        callback: (match, latDeg, latDir, lonDeg, lonDir) => {
+          return `${latDeg} 00.00 ${latDir}-${lonDeg} 00.00 ${lonDir}`;
+        },
+      },
     ];
   }
 

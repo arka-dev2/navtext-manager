@@ -159,7 +159,7 @@ class DateExtractor {
       //gestione di questo formato : 0145 UTC AND 0430 UTC FROM 23 NOV 2024 TO 06 DEC 2024
       {
         regex:
-          /\b(\d{4})\s+UTC\s+AND\s+(\d{4})\s+UTC\s+FROM\s+(\d{2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})\s+TO\s+(\d{2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})\b/g, //
+          /\b(\d{4})\s+UTC\s+AND\s+(\d{4})\s+UTC\s+FROM\s+(\d{1,2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})\s+TO\s+(\d{1,2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+(\d{4})\b/g,
         callback: (
           m,
           from,
@@ -179,9 +179,25 @@ class DateExtractor {
           hour = hour < 10 ? `0${hour}` : hour;
           minute = minute < 10 ? `0${minute}` : minute;
 
-          const date = `${dayFrom}/${
-            (this, this.#getMonth1(monthFrom))
-          }/20${yearFrom}`;
+          const date = `${dayFrom}/${this.#getMonth1(monthFrom)}/20${yearFrom}`;
+          const timeSupp = `${hour}:${minute} ${desc}`;
+          return `${date}-${timeSupp}`;
+        },
+      },
+      //gestione di questo formato : 21 NOVEMBER 2024 AT 0910 UTC
+      {
+        regex:
+          /\b(\d{1,2})\s+(JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER)\s+(\d{4})\s+AT\s+(\d{2})(\d{2})\s+UTC\b/g,
+        callback: (m, day, month, year, hour, minute) => {
+          hour = Number(hour);
+          minute = Number(minute);
+
+          const desc = hour > 12 ? "PM" : "AM";
+          hour = hour > 12 ? `${hour - 12}` : hour;
+          hour = hour < 10 ? `0${hour}` : hour;
+          minute = minute < 10 ? `0${minute}` : minute;
+
+          const date = `${day}/${this.#getMonth2(month)}/20${year}`;
           const timeSupp = `${hour}:${minute} ${desc}`;
           return `${date}-${timeSupp}`;
         },
