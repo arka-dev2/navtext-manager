@@ -137,6 +137,24 @@ class DateExtractor {
           return `${date}-${timeSupp}`;
         },
       },
+      //gestione di questo formato : 141405 UTC MAR 24
+      {
+        regex:
+          /\b(\d{2})(\d{2})(\d{2})\s+UTC\s+(\d{2})\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\b/g,
+        callback: (m, day, hour, minute, year, month) => {
+          hour = Number(hour);
+          minute = Number(minute);
+
+          const desc = hour > 12 ? "PM" : "AM";
+          hour = hour > 12 ? `${hour - 12}` : hour;
+          hour = hour < 10 ? `0${hour}` : hour;
+          minute = minute < 10 ? `0${minute}` : minute;
+
+          const date = `${day}/${(this, this.#getMonth1(month))}/20${year}`;
+          const timeSupp = `${hour}:${minute} ${desc}`;
+          return `${date}-${timeSupp}`;
+        },
+      },
     ];
   }
 
