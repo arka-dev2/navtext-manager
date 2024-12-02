@@ -42,9 +42,11 @@ class PageDetected {
 
   async getPageNumber2(linkDB) {
     const date = new Date();
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
     const year = date.getFullYear();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    day = day < 10 ? `0${day}` : `${day}`;
+    month = month < 10 ? `0${month}` : `${month}`;
     const todayStringDate = `${year}-${month}-${day}`;
 
     let numPage;
@@ -79,7 +81,7 @@ class PageDetected {
     let text = $(
       "div.entry-content.alignfull.wp-block-post-content.is-layout-constrained.wp-block-post-content-is-layout-constrained"
     ).text();
-    text = text.replaceAll("\n", " ");
+    // text = text.replaceAll("\n", " ");
     return text;
   }
 
