@@ -23,7 +23,9 @@ class PageDetected {
     //----    Download dei messaggi    ----
     for (let message of messages) {
       message.text = await this.dawnloadNavtex(message.link);
-      message.navarea = this.getNavarea(message.text);
+      const { navarea, reference } = this.getNavareaAndRif(message.text);
+      message.navarea = navarea;
+      message.reference = reference;
     }
 
     return messages;
@@ -81,17 +83,20 @@ class PageDetected {
     let text = $(
       "div.entry-content.alignfull.wp-block-post-content.is-layout-constrained.wp-block-post-content-is-layout-constrained"
     ).text();
-    // text = text.replaceAll("\n", " ");
     return text;
   }
 
-  getNavarea(text) {
+  getNavareaAndRif(text) {
     let navarea = "";
+    let reference = "";
     const navareaList = text.match(
-      /\bNAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)\b/g
+      /\bNAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\s+(\d{1,5}\/\d{1,4}))?\b/
     );
-    if (navareaList !== null) navarea = navareaList[0];
-    return navarea;
+    if (navareaList !== null) {
+      navarea = navareaList[1];
+      reference = navareaList[2] ? navareaList[2] : "";
+    }
+    return { navarea, reference };
   }
 }
 
