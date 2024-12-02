@@ -32,7 +32,7 @@ class DateExtractor {
       //gestione di questo formato : 192030 UTC APR 25, 111245 UTC MAR 2024
       {
         regex:
-          /\b(\d{2})(\d{2})(\d{2}) UTC (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2}|\d{4})\b/g, //
+          /\b(\d{2})(\d{2})(\d{2}) UTC (JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) (\d{2}|\d{4})\b/g,
         callback: (m, day, hour, minute, month, year) => {
           hour = Number(hour);
           minute = Number(minute);
@@ -87,10 +87,10 @@ class DateExtractor {
       //gestione di questo formato : 21 Nov 2024 TIME: 0242 UTC
       {
         regex:
-          /\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})\s+(?:TIME|time):\s+(\d{4})\s+UTC/g,
-        callback: (m, day, month, year, time) => {
-          let hour = Number(time.substring(0, 2));
-          let minute = Number(time.substring(2, 4));
+          /\b(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{4})\s+(?:TIME|time):\s+(\d{2})(?:\:)?(\d{2})\s+UTC/g,
+        callback: (m, day, month, year, hour, minute) => {
+          hour = Number(hour);
+          minute = Number(minute);
 
           const desc = hour > 12 ? "PM" : "AM";
           hour = hour > 12 ? `${hour - 12}` : hour;
