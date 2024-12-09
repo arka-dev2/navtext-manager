@@ -1,5 +1,6 @@
 const cheerio = require("cheerio");
 const axios = require("axios");
+const Message = require("../Entity/message");
 
 class PageDetected {
   async getMessagesArr(pageUrl) {
@@ -10,22 +11,27 @@ class PageDetected {
       "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div"
     );
 
-    $(divs).each((index, div) => {
+    for (let div of divs) {
       const links = $(div).find("a");
 
       const publicationDate = links.eq(0).text();
       const type = links.eq(1).text();
       const link = links.eq(2).attr("href");
+      const description = links.eq(2).text();
+      const text = await this.dawnloadNavtex(link);
+      const { navarea, reference } = this.getNavareaAndRif(text);
 
-      messages.push({ publicationDate, type, link });
-    });
-
-    //----    Download dei messaggi    ----
-    for (let message of messages) {
-      message.text = await this.dawnloadNavtex(message.link);
-      const { navarea, reference } = this.getNavareaAndRif(message.text);
-      message.navarea = navarea;
-      message.reference = reference;
+      messages.push(
+        new Message(
+          link,
+          publicationDate,
+          type,
+          description,
+          text,
+          navarea,
+          reference
+        )
+      );
     }
 
     return messages;
