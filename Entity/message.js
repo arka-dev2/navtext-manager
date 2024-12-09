@@ -1,7 +1,7 @@
 class Message {
   constructor(
     link,
-    pubblicationDate,
+    publicationDate,
     type,
     description,
     text,
@@ -9,7 +9,7 @@ class Message {
     reference
   ) {
     this.link = link;
-    this.pubblicationDate = pubblicationDate;
+    this.publicationDate = publicationDate;
     this.type = type;
     this.description = description;
     this.text = text;
