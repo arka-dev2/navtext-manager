@@ -13,6 +13,7 @@ class MessageDAO {
         result.link,
         result.pubblication_date,
         result.type,
+        result.description,
         result.text,
         result.navarea,
         result.reference
@@ -34,6 +35,7 @@ class MessageDAO {
         result[0].link,
         result[0].publication_date,
         result[0].type,
+        result[0].description,
         result[0].text,
         result[0].navarea,
         result[0].reference
@@ -44,11 +46,12 @@ class MessageDAO {
 
   insertMessage(message) {
     const query =
-      "insert into messages (link, publication_date, type, text, navarea, reference) values(?,?,?,?,?,?)";
+      "insert into messages (link, publication_date, type, description, text, navarea, reference) values(?,?,?,?,?,?,?)";
     const values = [
       message.link,
       message.publicationDate,
       message.type,
+      message.description,
       message.text,
       message.navarea,
       message.reference,
@@ -58,12 +61,13 @@ class MessageDAO {
 
   insertAllMessage(messages) {
     const query =
-      "insert into messages (link, publication_date, type, text, navarea, reference) values(?,?,?,?,?,?)";
+      "insert into messages (link, publication_date, type, description, text, navarea, reference) values(?,?,?,?,?,?,?)";
     for (let message of messages) {
       const values = [
         message.link,
         message.publicationDate,
         message.type,
+        message.description,
         message.text,
         message.navarea,
         message.reference,
