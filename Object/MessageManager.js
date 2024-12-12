@@ -17,7 +17,20 @@ class MessageManager {
 
   async getMessageInPage(page) {
     const link = `https://marinesafety.net/?query-52-page=${page}`;
-    return await this.pageDetected.getMessagesArr(link);
+
+    //----    scarto i messaggi di tipo amministrative, test e technical difficulties
+    const messages = await this.pageDetected.getMessagesArr(link);
+    const acceptedMessages = [];
+    for (let message of messages) {
+      if (
+        messages.type === "TECHNICAL DIFFICULTIES" ||
+        messages.type === "AMMINISTRATIVO" ||
+        messages.type === "TEST"
+      )
+        continue;
+      acceptedMessages.push(message);
+    }
+    return acceptedMessages;
   }
 
   async insertIntoDB(messages) {
