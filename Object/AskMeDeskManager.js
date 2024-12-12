@@ -13,52 +13,62 @@ class AskMeDeskManager {
 
   putMessages(messages) {
     return new Promise((resolve) => {
-      askMeServerAuth()
+      this.askMeServerAuth()
         .then((res) => {
           const { sessionId, token } = res.data;
           axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
           axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
+          let url =
+            this.askMeServer.baseUri + this.askMeServer.urls.requestCreation;
 
-          let url = askMeServer.baseUri + askMeServer.urls.requestCreation;
+          for (let messsage of messages) {
+            const obj = {
+              long: null,
+              lat: null,
+              description: messsage.description,
+              text: messsage.text.replaceAll("\n", "<br>"),
+              navarea: messsage.navarea,
+            };
 
-          options = {
-            codServizio: "AMPLM",
-            codAssetRoot,
-            codAssetFiglio: codAssetRoot,
-            codTipoRichiesta,
-            codPriorita: "STD",
-            oggetto: object,
-            descrizione: description,
-            idUtenteRichiedente: 586, // SVILUPPO 586 - RILASCIO 583
-            codiceCanale: "WEB",
-            listaSezioniRichiesta: [
-              {
-                codice: "IAA",
-                listaAttributiSezione: [
-                  {
-                    codiceAttributo: "VSL",
-                    valoreAttributo: generalInformation["SHIP NAME"],
-                  },
-                  {
-                    codiceAttributo: "SWV",
-                    valoreAttributo: version,
-                  },
-                ],
-              },
-            ],
-          };
+            const options = {
+              codServizio: "AMPLM",
+              codAssetRoot: "SW",
+              codAssetFiglio: "SW",
+              codTipoRichiesta: "INC",
+              codPriorita: "STD",
+              oggetto: "uncategorized",
+              descrizione: JSON.stringify(obj),
+              idUtenteRichiedente: 586, // SVILUPPO 586 - RILASCIO 583
+              codiceCanale: "WEB",
+              listaSezioniRichiesta: [
+                {
+                  codice: "IAA",
+                  listaAttributiSezione: [
+                    {
+                      codiceAttributo: "VSL",
+                      valoreAttributo: "navtex-alert",
+                    },
+                    {
+                      codiceAttributo: "SWV",
+                      valoreAttributo: "1.0.0",
+                    },
+                  ],
+                },
+              ],
+            };
 
-          doAxiosCall(method, url, options)
-            .then((res) => {
-              console.log("messaggio inserito");
-            })
-            .catch((e) => {
-              if (e.code === "ENOTFOUND") {
-                console.log("errore di connessione al server");
-              } else {
-                console.log("errore di autenticazione al server");
-              }
-            });
+            this.doAxiosCall("post", url, options)
+              .then((res) => {
+                console.log("messaggio inserito");
+              })
+              .catch((e) => {
+                if (e.code === "ENOTFOUND") {
+                  console.log("errore di connessione al server");
+                } else {
+                  console.log("errore di autenticazione al server");
+                }
+              });
+          }
         })
         .catch((e) => {
           if (e.code === "ENOTFOUND") {
@@ -73,14 +83,15 @@ class AskMeDeskManager {
   askMeServerAuth() {
     return new Promise((resolve, reject) => {
       const methods = "get";
-      const url = askMeServer.baseUri + askMeServer.urls.autentication;
+      const url =
+        this.askMeServer.baseUri + this.askMeServer.urls.autentication;
       const options = {
         auth: {
-          username: askMeServer.username,
-          password: askMeServer.password,
+          username: this.askMeServer.username,
+          password: this.askMeServer.password,
         },
       };
-      doAxiosCall(methods, url, options)
+      this.doAxiosCall(methods, url, options)
         .then((res) => {
           resolve(res);
         })
