@@ -101,6 +101,7 @@ class PageDetected {
     if (navareaList !== null) {
       const number = Number(navareaList[1]);
       navarea = isNaN(number) ? navareaList[1] : this.convertNavare(number);
+      navarea = "NAVAREA " + navarea;
       reference = navareaList[2] ? navareaList[2] : "";
     }
     return { navarea, reference };
