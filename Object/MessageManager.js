@@ -23,11 +23,13 @@ class MessageManager {
     const acceptedMessages = [];
     for (let message of messages) {
       if (
-        messages.type === "TECHNICAL DIFFICULTIES" ||
-        messages.type === "AMMINISTRATIVO" ||
-        messages.type === "TEST"
+        message.type === "TECHNICAL DIFFICULTIES" ||
+        message.type === "ADMINISTRATIVE" ||
+        message.type === "TEST"
       )
         continue;
+
+      if (message.navarea === "") continue;
       acceptedMessages.push(message);
     }
     return acceptedMessages;
@@ -42,7 +44,7 @@ class MessageManager {
   }
 
   checkMessage(message) {
-    return !this.linkDB.includes(message.link);
+    return messageDAO.getMessage(message.link) === null;
   }
 }
 
