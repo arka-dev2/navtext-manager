@@ -5,6 +5,7 @@ const reportManager = require("./Object/ReportManager.js");
 const conn = require("./Object/conn");
 
 async function main() {
+  const allMessages = [];
   const pageNumber = await messageManager.getPageNumber();
   const progressBar = new ProgressBar(
     pageNumber,
@@ -15,13 +16,8 @@ async function main() {
   for (let i = 1; i <= pageNumber; i++) {
     try {
       const messages = await messageManager.getMessageInPage(i);
+      for (let message of messages) allMessages.push(message);
       messageManager.insertIntoDB(messages);
-      for (let message of messages) {
-        if (messageManager.checkMessage(message)) {
-          const report = reportManager.estractReport(message);
-          if (report !== null) reportManager.insertIntoDB(report);
-        }
-      }
     } catch (err) {
       console.error("Errore nel caricamento della pagina:", err);
     }
