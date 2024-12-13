@@ -16,6 +16,25 @@ class ReportManager {
   insertIntoDB(report) {
     reportsDAO.insertReport(report);
   }
+
+  getReportFromMessage(message) {
+    if (message.type === "WEATHER") return this.getWeatherRportType(message);
+
+    return { messageType: "uncategorized" };
+  }
+
+  getWeatherRportType(message) {
+    return {
+      messageType: "uncategorized",
+      areatype: null,
+      coordinates: null,
+      navtext: {
+        navarea: message.navarea,
+        text: message.text,
+        description: message.description,
+      },
+    };
+  }
 }
 
 module.exports = new ReportManager();
