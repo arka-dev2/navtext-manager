@@ -16,7 +16,8 @@ class MessageDAO {
         result.description,
         result.text,
         result.navarea,
-        result.reference
+        result.reference,
+        result.invio_lascaux
       );
       messages.push(message);
     }
@@ -38,7 +39,8 @@ class MessageDAO {
         result[0].description,
         result[0].text,
         result[0].navarea,
-        result[0].reference
+        result[0].reference,
+        result[0].invio_lascaux
       );
     }
     return message;
@@ -46,7 +48,7 @@ class MessageDAO {
 
   insertMessage(message) {
     const query =
-      "insert into messages (link, publication_date, type, description, text, navarea, reference) values(?,?,?,?,?,?,?)";
+      "insert into messages (link, publication_date, type, description, text, navarea, reference, invio_lascaux) values(?,?,?,?,?,?,?,?)";
     const values = [
       message.link,
       message.publicationDate,
@@ -55,13 +57,14 @@ class MessageDAO {
       message.text,
       message.navarea,
       message.reference,
+      message.invioLascaux ? 1 : 0,
     ];
     conn.query(query, values);
   }
 
   insertAllMessage(messages) {
     const query =
-      "insert into messages (link, publication_date, type, description, text, navarea, reference) values(?,?,?,?,?,?,?)";
+      "insert into messages (link, publication_date, type, description, text, navarea, reference, invio_lascaux) values(?,?,?,?,?,?,?,?)";
     for (let message of messages) {
       const values = [
         message.link,
@@ -71,6 +74,7 @@ class MessageDAO {
         message.text,
         message.navarea,
         message.reference,
+        message.invioLascaux ? 1 : 0,
       ];
       conn.query(query, values);
     }

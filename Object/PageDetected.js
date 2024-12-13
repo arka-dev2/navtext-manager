@@ -29,7 +29,8 @@ class PageDetected {
           description,
           text,
           navarea,
-          reference
+          reference,
+          false
         )
       );
     }
