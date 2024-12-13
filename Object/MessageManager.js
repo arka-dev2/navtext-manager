@@ -23,24 +23,21 @@ class MessageManager {
     const acceptedMessages = [];
     for (let message of messages) {
       if (
+        !this.checkMessage(message) ||
         message.type === "TECHNICAL DIFFICULTIES" ||
         message.type === "ADMINISTRATIVE" ||
-        message.type === "TEST"
+        message.type === "TEST" ||
+        message.navarea === ""
       )
         continue;
 
-      if (message.navarea === "") continue;
       acceptedMessages.push(message);
     }
     return acceptedMessages;
   }
 
   async insertIntoDB(messages) {
-    for (let message of messages) {
-      if (this.checkMessage(message)) {
-        messageDAO.insertMessage(message);
-      }
-    }
+    messageDAO.insertAllMessage(messages);
   }
 
   checkMessage(message) {
