@@ -6,7 +6,7 @@ const conn = require("./Object/conn");
 
 async function main() {
   const allMessages = [];
-  const pageNumber = await messageManager.getPageNumber();
+  const pageNumber = await messageManager.getPageNumber2();
   const progressBar = new ProgressBar(
     pageNumber,
     "pagine",

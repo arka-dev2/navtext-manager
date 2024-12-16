@@ -1,13 +1,10 @@
 //lo script scarica tutti i navtex dal sito marine safety
-const PageDetected = require("./Object/PageDetected.js");
 const ProgressBar = require("./Object/ProgressBar.js");
-const messageDAO = require("./Dao/MessageDAO.js");
+const messageManager = require("./Object/MessageManager.js");
 const conn = require("./Object/conn.js");
 
 (async () => {
-  const linkDB = messageDAO.getAllMessage().map((el) => el.link);
-  const pageDetected = new PageDetected();
-  let pageNumber = await pageDetected.getPageNumber();
+  const pageNumber = await messageManager.getPageNumber();
   const progressBar = new ProgressBar(
     pageNumber,
     "pagine",
@@ -16,21 +13,10 @@ const conn = require("./Object/conn.js");
 
   for (let i = 1; i <= pageNumber; i++) {
     try {
-      const link = `https://marinesafety.net/?query-52-page=${i}`;
-      const navtexObjArr = await pageDetected.getNavtexObjArr(link);
-      for (let navtexObj of navtexObjArr) {
-        if (!linkDB.includes(navtexObj.link)) {
-          const link = navtexObj.link;
-          const publicationDate = navtexObj.date;
-          const type = navtexObj.type;
-          const text = await pageDetected.dawnloadNavtex(navtexObj.link);
-
-          const message = { link, publicationDate, type, text };
-          messageDAO.insertMessage(message);
-        }
-      }
+      const messages = await messageManager.getMessageInPage(i);
+      messageManager.insertIntoDB(messages);
     } catch (err) {
-      console.error("Errore nel caricamento della pagina:", err.message);
+      console.error("Errore nel caricamento della pagina:", err);
     }
     progressBar.updatedOneStep();
   }

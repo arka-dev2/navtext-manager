@@ -8,9 +8,16 @@ class MessageManager {
     this.pageDetected = new PageDetected();
   }
 
-  async getPageNumber() {
+  async getPageNumber2() {
     const load = loading("conteggio delle pagine").start();
     const pageNumber = await this.pageDetected.getPageNumber2(this.linkDB);
+    load.stop();
+    return pageNumber;
+  }
+
+  async getPageNumber() {
+    const load = loading("conteggio delle pagine").start();
+    const pageNumber = await this.pageDetected.getPageNumber();
     load.stop();
     return pageNumber;
   }
