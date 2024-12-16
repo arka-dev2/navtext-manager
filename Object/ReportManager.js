@@ -76,8 +76,8 @@ class ReportManager {
     return messages;
   }
 
-  //questa funzione elimina testo che potrebbe falsare la lettura del messaggio
   clearTextMessage(message) {
+    //questa parte modifica il testo che potrebbe falsare la lettura del messaggio
     let navareaList = message.text.match(
       /\bCANCEL NAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\s+(\d{1,5}\/\d{1,4}))?\b/g
     );
@@ -85,6 +85,10 @@ class ReportManager {
       for (let navarea of navareaList)
         message.text = message.text.replaceAll(navarea, "");
     }
+
+    //qui cambio il formato delle coordinate
+    message.text = coordinatesExtractor.replaceCoordinate(message.text);
+    console.log(message.text);
   }
 
   getReportType1(message) {

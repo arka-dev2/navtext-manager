@@ -84,6 +84,19 @@ class CoordinatesExtractor {
       direction * (Number(latDeg) + Number(latMin.replace(",", ".")) / 60);
     return angle;
   }
+
+  replaceCoordinate(text) {
+    //scrivo le coordinate nel formato standard, controllando di che formato sono
+    for (let obj of this.arr) {
+      let coordinateExtract = text.match(obj.regex);
+      if (coordinateExtract !== null) {
+        text = text.replace(obj.regex, obj.callback);
+        break;
+      }
+    }
+
+    return text;
+  }
 }
 
 module.exports = new CoordinatesExtractor();
