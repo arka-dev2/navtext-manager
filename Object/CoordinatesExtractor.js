@@ -4,7 +4,7 @@ class CoordinatesExtractor {
       //gestione di questo formato : 11-56.70N 069-48.10W, 22 – 51.24S 014 – 29.52E, 26 – 06.45 S 014 – 57.31 E, 25 55.1S 032 52.5E
       {
         regex:
-          /(\d{1,3})(?:\s)?(?:–|-)?(?:\s)?(\d{1,3}(?:\.\d{1,3})?)(?:\s)?([NSEW])\s+(\d{1,3})(?:\s)?(?:–|-)?(?:\s)?(\d{1,3})(?:\.\d{1,3})?(?:\s)?([NSEW])/g,
+          /(\d{1,3})(?:\s)?(?:–|-)?(?:\s)?(\d{1,3}(?:\.\d{1,3})?)(?:\s)?([NSEW])\s+(\d{1,3})(?:\s)?(?:–|-)?(?:\s)?(\d{1,3}(?:\.\d{1,3})?)(?:\s)?([NSEW])/g,
         callback: (m, latDeg, latMin, latDir, lonDeg, lonMin, lonDir) => {
           return `${latDeg}-${latMin}${latDir} ${lonDeg}-${lonMin}${lonDir}`;
         },
@@ -47,6 +47,14 @@ class CoordinatesExtractor {
         regex: /(\d{1,3})([NSEW])(?:\s+)?(\d{1,3})([NSEW])/g,
         callback: (match, latDeg, latDir, lonDeg, lonDir) => {
           return `${latDeg}-00.00${latDir} ${lonDeg}-00.00${lonDir}`;
+        },
+      },
+      //gestione di questo formato : LAT. 33 02 N / LONG. 014 52
+      {
+        regex:
+          /LAT. (\d{1,3}) (\d{1,3}(?:\.\d{1,3})?) ([NSEW]) \/ LONG. (\d{1,3}) (\d{1,3}(?:\.\d{1,3})?) ([NSEW])/g,
+        callback: (match, latDeg, latMin, latDir, lonDeg, lonMin, lonDir) => {
+          return `${latDeg}-${latMin}${latDir} ${lonDeg}-${lonMin}${lonDir}`;
         },
       },
     ];
@@ -96,6 +104,15 @@ class CoordinatesExtractor {
     }
 
     return text;
+  }
+
+  checkCoordinateExist(text) {
+    for (let obj of this.arr) {
+      let coordinateExtract = text.match(obj.regex);
+      if (coordinateExtract !== null) return true;
+    }
+
+    return false;
   }
 }
 
