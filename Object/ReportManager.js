@@ -23,6 +23,12 @@ class ReportManager {
     const subMessages = this.getMultiNavtexMessages(message.text);
 
     if (subMessages.length == 1) {
+      if (
+        message.type === "SPACE DEBRIS" ||
+        message.type === "ROCKET LAUNCH" ||
+        message.type === "SCIENTIFIC RESEARCH"
+      )
+        return this.getReportType1(message);
     }
 
     return {
@@ -90,28 +96,29 @@ class ReportManager {
     if (coordinatesSupp.length === 0 && areaType === "") {
       areaType = null;
     }
-    if (coordinatesSupp.length !== 0 && areaType === "") {
+    if (coordinatesSupp.length !== 0) {
       messageType = "danger";
-      areaType = "punctual";
-      coordinates = coordinatesSupp;
-    }
-    if (coordinatesSupp.length !== 0 && areaType === "multi-polygon") {
-      messageType = "danger";
-      const areas = message.text.match(
-        /([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW](?:,\s*[\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])*)/g
-      );
-      coordinates = [];
-      for (let area of areas) {
-        coordinates.push(coordinatesExtractor.getCoordinate(area));
+      if (areaType === "") {
+        areaType = "punctual";
+        coordinates = coordinatesSupp;
+      } else if (areaType === "multi-polygon") {
+        messageType = "danger";
+        const areas = message.text.match(
+          /([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW](?:,\s*[\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])*)/g
+        );
+        coordinates = [];
+        for (let area of areas) {
+          coordinates.push(coordinatesExtractor.getCoordinate(area));
+        }
+      } else if (areaType === "polygon") {
+        messageType = "danger";
+        const areas = message.text.match(
+          /([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW](?:,\s*[\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])*)/g
+        );
+        coordinates = coordinatesSupp;
       }
     }
-    if (coordinatesSupp.length !== 0 && areaType === "polygon") {
-      messageType = "danger";
-      const areas = message.text.match(
-        /([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW](?:,\s*[\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])*)/g
-      );
-      coordinates = coordinatesSupp;
-    }
+
     return {
       link: message.link,
       messageType,
