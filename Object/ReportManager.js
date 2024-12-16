@@ -38,7 +38,11 @@ class ReportManager {
   }
 
   getAreaType(text) {
-    if (text.toUpperCase().includes("IN AREA BOUND BY")) return "polygon";
+    if (
+      text.toUpperCase().includes("IN AREA BOUND BY") ||
+      text.toUpperCase().includes("ALONG TRACKLINE JOINING")
+    )
+      return "polygon";
     if (text.toUpperCase().includes("IN AREAS BOUND BY"))
       return "multi-polygon";
     return "";
@@ -48,7 +52,6 @@ class ReportManager {
     const messages = [];
     const navareaList = text.match(
       /\b(?:NAVAREA|METAREA) (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21)(?:\s+(\d{1,5}\/\d{1,4}))?\b/g
-      // /\bNAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\s+(\d{1,5}\/\d{1,4}))?\n\b/g
     );
     for (let i = 0; i < navareaList.length - 1; i++) {
       messages.push(
@@ -76,6 +79,50 @@ class ReportManager {
       for (let navarea of navareaList)
         message.text = message.text.replaceAll(navarea, "");
     }
+  }
+
+  getReportType1(message) {
+    let areaType = this.getAreaType(message.text);
+    let coordinates = null;
+    let messageType = "uncategorized";
+    let coordinatesSupp = coordinatesExtractor.getCoordinate(message.text);
+
+    if (coordinatesSupp.length === 0 && areaType === "") {
+      areaType = null;
+    }
+    if (coordinatesSupp.length !== 0 && areaType === "") {
+      messageType = "danger";
+      areaType = "punctual";
+      coordinates = coordinatesSupp;
+    }
+    if (coordinatesSupp.length !== 0 && areaType === "multi-polygon") {
+      messageType = "danger";
+      const areas = message.text.match(
+        /([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW](?:,\s*[\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])*)/g
+      );
+      coordinates = [];
+      for (let area of areas) {
+        coordinates.push(coordinatesExtractor.getCoordinate(area));
+      }
+    }
+    if (coordinatesSupp.length !== 0 && areaType === "polygon") {
+      messageType = "danger";
+      const areas = message.text.match(
+        /([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW](?:,\s*[\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])*)/g
+      );
+      coordinates = coordinatesSupp;
+    }
+    return {
+      link: message.link,
+      messageType,
+      areaType,
+      coordinates,
+      navtext: {
+        navarea: message.navarea,
+        text: message.text,
+        description: message.description,
+      },
+    };
   }
 }
 
