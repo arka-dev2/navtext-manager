@@ -4,25 +4,25 @@ const dateExtractor = require("./DateExtractor");
 const coordinatesExtractor = require("./CoordinatesExtractor");
 
 class ReportManager {
-  estractReport(message) {
-    let { date, time } = dateExtractor.getDate(message.text);
-    let coordinates = coordinatesExtractor.getCoordinate(message.text);
+  // estractReport(message) {
+  //   let { date, time } = dateExtractor.getDate(message.text);
+  //   let coordinates = coordinatesExtractor.getCoordinate(message.text);
 
-    if (date !== null && coordinates !== null)
-      return new Report(message.link, message.type, date, time, coordinates);
-    return null;
-  }
+  //   if (date !== null && coordinates !== null)
+  //     return new Report(message.link, message.type, date, time, coordinates);
+  //   return null;
+  // }
 
-  insertIntoDB(report) {
-    reportsDAO.insertReport(report);
-  }
+  // insertIntoDB(report) {
+  //   reportsDAO.insertReport(report);
+  // }
 
   getReportFromMessage(message) {
     //----    check per constrollare se nel testo ci sono più navtex    ----
     this.clearTextMessage(message);
     const subMessages = this.getMultiNavtexMessages(message.text);
 
-    if (subMessages.length == 1) {
+    if (subMessages.length === 1) {
       if (
         message.type === "SPACE DEBRIS" ||
         message.type === "ROCKET LAUNCH" ||
@@ -79,7 +79,7 @@ class ReportManager {
   //questa funzione elimina testo che potrebbe falsare la lettura del messaggio
   clearTextMessage(message) {
     let navareaList = message.text.match(
-      /\bCANCEL NAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\s+(\d{1,5}\/\d{1,4}))\b/g
+      /\bCANCEL NAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\s+(\d{1,5}\/\d{1,4}))?\b/g
     );
     if (navareaList !== null) {
       for (let navarea of navareaList)
