@@ -39,15 +39,47 @@ class ReportManager {
     };
   }
 
-  getAreaType(text) {
-    if (
-      text.toUpperCase().includes("IN AREA BOUND BY") ||
-      text.toUpperCase().includes("ALONG TRACKLINE JOINING")
-    )
-      return "polygon";
-    if (text.toUpperCase().includes("IN AREAS BOUND BY"))
-      return "multi-polygon";
-    return "";
+  getAreaTypeAndCoordinates(text) {
+    let coordinates = null;
+    let areaType = null;
+    let boolCoord = coordinatesExtractor.checkCoordinateExist(text);
+    if (boolCoord) {
+      if (
+        text.toUpperCase().includes("IN AREA BOUND BY") ||
+        text.toUpperCase().includes("AREA BOUNDED BY") //
+      ) {
+        areaType = "polygon";
+        coordinates = coordinatesExtractor.getCoordinate(text);
+      } else if (text.toUpperCase().includes("IN AREAS BOUND BY")) {
+        areaType = "multi-polygon";
+        const areas = text.match(
+          /\b([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])\b/g
+        );
+        coordinates = [];
+        for (let area of areas) {
+          coordinates.push(coordinatesExtractor.getCoordinate(area));
+        }
+      } else if (
+        text.toUpperCase().includes("BETWEEN") ||
+        text.toUpperCase().includes("ALONG TRACKLINE JOINING")
+      ) {
+        areaType = "linear";
+        coordinates = coordinatesExtractor.getCoordinate(text);
+      } else {
+        const matchCircle = text.match(/WITHIN (\d+(?:\.\d+)) MILES?/);
+        if (matchCircle !== null) {
+          areaType = "circle";
+          coordinates = coordinatesExtractor.getCoordinate(text);
+          coordinates[0].radius =
+            Number(matchCircle[1].replace(",", ".")) * 1852;
+        } else {
+          areaType = "punctual";
+          coordinates = coordinatesExtractor.getCoordinate(text);
+        }
+      }
+    }
+
+    return { areaType, coordinates };
   }
 
   getMultiNavtexMessages(text) {
