@@ -23,15 +23,11 @@ class ReportManager {
     const subMessages = this.getMultiNavtexMessages(message.text);
 
     if (subMessages.length === 1) {
-      if (
-        message.type === "SPACE DEBRIS" ||
-        message.type === "ROCKET LAUNCH" ||
-        message.type === "SCIENTIFIC RESEARCH"
-      )
-        return this.getReportType1(message);
+      return this.getReport(message);
     }
 
     return {
+      // link: message.link,
       messageType: "uncategorized",
       areatype: null,
       coordinates: null,
@@ -91,40 +87,42 @@ class ReportManager {
     console.log(message.text);
   }
 
-  getReportType1(message) {
-    let areaType = this.getAreaType(message.text);
-    let coordinates = null;
+  getReport(message) {
+    let { areaType, coordinates } = this.getAreaTypeAndCoordinates(
+      message.text
+    );
     let messageType = "uncategorized";
-    let coordinatesSupp = coordinatesExtractor.getCoordinate(message.text);
 
-    if (coordinatesSupp.length === 0 && areaType === "") {
-      areaType = null;
-    }
-    if (coordinatesSupp.length !== 0) {
-      messageType = "danger";
-      if (areaType === "") {
-        areaType = "punctual";
-        coordinates = coordinatesSupp;
-      } else if (areaType === "multi-polygon") {
+    if (coordinates !== null && areaType !== null) {
+      if (
+        message.type === "SPACE DEBRIS" ||
+        message.type === "ROCKET LAUNCH" ||
+        message.type === "SCIENTIFIC RESEARCH" ||
+        message.type === "SEISMIC SURVEY" ||
+        message.type === "GEOPOLITICAL INSTABILITY" ||
+        message.type === "CABLE OPERATIONS" ||
+        message.type === "NAVIGATION HAZARD" ||
+        message.type === "PIPELINE OPERATIONS" ||
+        message.type === "OIL PLATFORMS"
+      )
         messageType = "danger";
-        const areas = message.text.match(
-          /([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW](?:,\s*[\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])*)/g
-        );
-        coordinates = [];
-        for (let area of areas) {
-          coordinates.push(coordinatesExtractor.getCoordinate(area));
-        }
-      } else if (areaType === "polygon") {
-        messageType = "danger";
-        const areas = message.text.match(
-          /([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW](?:,\s*[\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])*)/g
-        );
-        coordinates = coordinatesSupp;
+      if (message.type === "MAP UPDATE" || message.type === "ICEBERGS")
+        messageType = "environment risk";
+      if (message.type === "COMMERCIAL SHIPPING" || message.type === "MIGRANTS")
+        messageType = "casualties";
+      if (message.type === "WEATHER") {
+        coordinates = null;
+        areaType = null;
       }
+      // if (message.type === "ICEBERGS" && areaType === "linear") {
+      //   messageType = "uncategorized";
+      //   coordinates = null;
+      //   areaType = null;
+      // }
     }
 
     return {
-      link: message.link,
+      // link: message.link,
       messageType,
       areaType,
       coordinates,
