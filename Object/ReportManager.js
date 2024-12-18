@@ -53,22 +53,25 @@ class ReportManager {
   getMultiNavtexMessages(text) {
     const messages = [];
     const navareaList = text.match(
-      /\b(?:NAVAREA|METAREA) (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21)(?:\s+(\d{1,5}\/\d{1,4}))?\b/g
+      /\bNAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\s+(\d{1,5}\/\d{1,4}))?\b/g
     );
-    for (let i = 0; i < navareaList.length - 1; i++) {
+    if (navareaList !== null) {
+      for (let i = 0; i < navareaList.length - 1; i++) {
+        messages.push(
+          text.substring(
+            text.indexOf(navareaList[i]),
+            text.indexOf(navareaList[i + 1])
+          )
+        );
+      }
       messages.push(
         text.substring(
-          text.indexOf(navareaList[i]),
-          text.indexOf(navareaList[i + 1])
+          text.indexOf(navareaList[navareaList.length - 1]),
+          text.length
         )
       );
-    }
-    messages.push(
-      text.substring(
-        text.indexOf(navareaList[navareaList.length - 1]),
-        text.length
-      )
-    );
+    } else messages.push(text);
+
     return messages;
   }
 
@@ -84,7 +87,6 @@ class ReportManager {
 
     //qui cambio il formato delle coordinate
     message.text = coordinatesExtractor.replaceCoordinate(message.text);
-    console.log(message.text);
   }
 
   getReport(message) {
