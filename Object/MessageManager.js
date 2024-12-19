@@ -4,17 +4,18 @@ const loading = require("loading-cli");
 
 class MessageManager {
   constructor() {
-    this.linkDB = messageDAO.getAllMessage().map((el) => el.link);
     this.pageDetected = new PageDetected();
   }
 
+  //questa funzione serve per prendersi il numero di tutte le pagine con i navtex di oggi
   async getPageNumber2() {
     const load = loading("conteggio delle pagine").start();
-    const pageNumber = await this.pageDetected.getPageNumber2(this.linkDB);
+    const pageNumber = await this.pageDetected.getPageNumber2();
     load.stop();
     return pageNumber;
   }
 
+  //questa funzione serve per prendersi il numero di tutte le pagine di marine-safety
   async getPageNumber() {
     const load = loading("conteggio delle pagine").start();
     const pageNumber = await this.pageDetected.getPageNumber();

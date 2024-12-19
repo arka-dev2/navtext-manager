@@ -49,7 +49,7 @@ class PageDetected {
     return pageNumber;
   }
 
-  async getPageNumber2(linkDB) {
+  async getPageNumber2() {
     const date = new Date();
     const year = date.getFullYear();
     let day = date.getDate();
