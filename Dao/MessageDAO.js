@@ -11,7 +11,7 @@ class MessageDAO {
     for (let result of results) {
       let message = new Message(
         result.link,
-        result.pubblication_date,
+        result.publication_date,
         result.type,
         result.description,
         result.text,
@@ -78,6 +78,22 @@ class MessageDAO {
       ];
       conn.query(query, values);
     }
+  }
+
+  updateMessage(message) {
+    const query =
+      "update messages set publication_date = ?, type = ?, description = ?, text = ?, navarea = ?, reference = ?, invio_lascaux = ? where link = ?";
+    const values = [
+      message.publicationDate,
+      message.type,
+      message.description,
+      message.text,
+      message.navarea,
+      message.reference,
+      message.invioLascaux ? 1 : 0,
+      message.link,
+    ];
+    conn.query(query, values);
   }
 }
 
