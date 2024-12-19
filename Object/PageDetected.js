@@ -96,7 +96,7 @@ class PageDetected {
 
   getNavareaAndRif(text) {
     let suppList = text.match(
-      /\b^(?:\d{1,6}Z (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\n)?NAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\nNAVAREA WARNING|\nCOASTAL WARNING (?:E|N|S|I)| WARNING)?(?:\s+(\d{1,5}\/\d{1,4}))\b/
+      /\b^(?:\d{1,6}Z (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\n)?NAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\nNAVAREA WARNING|\nCOASTAL WARNING (?:E|N|S|I)| WARNING)?(?:(?:\s|\/)+(\d{1,5}(?:\/\d{1,4})?))\b/
     );
     let navarea = null;
     let reference = null;
