@@ -13,6 +13,7 @@
     "cli-progress": "^3.12.0",
     "key-value-file": "^1.0.10",
     "loading-cli": "^1.1.2",
+    "puppeteer": "^23.11.1",
     "sync-mysql": "^3.0.1"
   }
 }
