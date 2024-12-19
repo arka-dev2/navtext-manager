@@ -38,7 +38,7 @@ class MessageManager {
         message.navarea === null
       )
         continue;
-
+      this.deleteMessageWithReference(message);
       acceptedMessages.push(message);
     }
     return acceptedMessages;
@@ -50,6 +50,11 @@ class MessageManager {
 
   checkMessage(message) {
     return messageDAO.getMessage(message.link) === null;
+  }
+
+  deleteMessageWithReference(message) {
+    const messageSupp = messageDAO.getMessageFromReference(message.reference);
+    if (messageSupp !== null) messageDAO.delateMessage(messageSupp);
   }
 }
 

@@ -5,7 +5,7 @@ class MessageDAO {
   getAllMessage() {
     let messages = [];
 
-    const query = "SELECT * FROM messages";
+    const query = "select * from messages";
     const results = conn.query(query);
 
     for (let result of results) {
@@ -27,7 +27,7 @@ class MessageDAO {
   getMessage(id) {
     let message = null;
 
-    const query = "SELECT * FROM messages where link = ?";
+    const query = "select * from messages where link = ?";
     const values = [id];
     const result = conn.query(query, values);
 
@@ -93,6 +93,33 @@ class MessageDAO {
       message.invioLascaux ? 1 : 0,
       message.link,
     ];
+    conn.query(query, values);
+  }
+
+  getMessageFromReference(reference) {
+    let message = null;
+    const query = "select * from messages where reference = ? ";
+    const values = [reference];
+    const result = conn.query(query, values);
+
+    if (result.length !== 0) {
+      message = new Message(
+        result[0].link,
+        result[0].publication_date,
+        result[0].type,
+        result[0].description,
+        result[0].text,
+        result[0].navarea,
+        result[0].reference,
+        result[0].invio_lascaux
+      );
+    }
+    return message;
+  }
+
+  delateMessage(message) {
+    const query = "delete from messages where link = ?";
+    const values = [message.link];
     conn.query(query, values);
   }
 }
