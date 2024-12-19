@@ -19,7 +19,8 @@ class PageDetected {
       const link = links.eq(2).attr("href");
       const description = links.eq(2).text();
       const text = await this.dawnloadNavtex(link);
-      const { navarea, reference } = this.getNavareaAndRif(text);
+      let { navarea, reference } = this.getNavareaAndRif(text);
+      if (navarea === null) navarea = this.getNavarea(text);
 
       messages.push(
         new Message(
@@ -94,18 +95,31 @@ class PageDetected {
   }
 
   getNavareaAndRif(text) {
-    let navarea = "";
-    let reference = "";
-    const navareaList = text.match(
-      /\b(?:NAVAREA|METAREA) (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21)(?:\s+(\d{1,5}\/\d{1,4}))?\b/
+    let suppList = text.match(
+      /\b^(?:\d{1,6}Z (?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC) \d{2}\n)?NAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\nNAVAREA WARNING|\nCOASTAL WARNING (?:E|N|S|I)| WARNING)?(?:\s+(\d{1,5}\/\d{1,4}))\b/
     );
-    if (navareaList !== null) {
-      const number = Number(navareaList[1]);
-      navarea = isNaN(number) ? navareaList[1] : this.convertNavare(number);
-      navarea = "NAVAREA " + navarea;
-      reference = navareaList[2] ? navareaList[2] : "";
+    let navarea = null;
+    let reference = null;
+    if (suppList !== null) {
+      navarea = "NAVAREA " + suppList[1];
+      reference = suppList[2];
     }
     return { navarea, reference };
+  }
+
+  getNavarea(text) {
+    const navareaList = text.match(
+      /\b(?:NAVAREA|METAREA) (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21)\b/
+    );
+    // console.log(navareaList);
+    if (navareaList !== null) {
+      const number = Number(navareaList[1]);
+      return (
+        "NAVAREA " +
+        (isNaN(number) ? navareaList[1] : this.convertNavare(number))
+      );
+    }
+    return null;
   }
 
   convertNavare(number) {

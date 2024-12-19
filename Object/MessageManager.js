@@ -35,7 +35,7 @@ class MessageManager {
         message.type === "TECHNICAL DIFFICULTIES" ||
         message.type === "ADMINISTRATIVE" ||
         message.type === "TEST" ||
-        message.navarea === ""
+        message.navarea === null
       )
         continue;
 
