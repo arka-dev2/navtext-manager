@@ -96,10 +96,10 @@ class MessageDAO {
     conn.query(query, values);
   }
 
-  getMessageFromReference(reference) {
+  getMessageFromReference(navarea, reference) {
     let message = null;
-    const query = "select * from messages where reference = ? ";
-    const values = [reference];
+    const query = "select * from messages where navarea = ? reference = ? ";
+    const values = [navarea, reference];
     const result = conn.query(query, values);
 
     if (result.length !== 0) {

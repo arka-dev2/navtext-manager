@@ -53,7 +53,10 @@ class MessageManager {
   }
 
   deleteMessageWithReference(message) {
-    const messageSupp = messageDAO.getMessageFromReference(message.reference);
+    const messageSupp = messageDAO.getMessageFromReference(
+      message.navarea,
+      message.reference
+    );
     if (messageSupp !== null) messageDAO.delateMessage(messageSupp);
   }
 }
