@@ -17,7 +17,7 @@ class MessageDAO {
         result.text,
         result.navarea,
         result.reference,
-        result.invio_lascaux
+        result.invio_lascaux === 1
       );
       messages.push(message);
     }
@@ -40,7 +40,7 @@ class MessageDAO {
         result[0].text,
         result[0].navarea,
         result[0].reference,
-        result[0].invio_lascaux
+        result[0].invio_lascaux === 1
       );
     }
     return message;
@@ -98,7 +98,7 @@ class MessageDAO {
 
   getMessageFromReference(navarea, reference) {
     let message = null;
-    const query = "select * from messages where navarea = ? reference = ? ";
+    const query = "select * from messages where navarea = ? and reference = ? ";
     const values = [navarea, reference];
     const result = conn.query(query, values);
 
@@ -111,7 +111,7 @@ class MessageDAO {
         result[0].text,
         result[0].navarea,
         result[0].reference,
-        result[0].invio_lascaux
+        result[0].invio_lascaux === 1
       );
     }
     return message;

@@ -38,21 +38,23 @@ class MessageManager {
         message.navarea === null
       )
         continue;
-      this.deleteMessageWithReference(message);
       acceptedMessages.push(message);
     }
     return acceptedMessages;
   }
 
   async insertIntoDB(messages) {
-    messageDAO.insertAllMessage(messages);
+    for (let message of messages) {
+      this.deleteMessageByReference(message);
+      messageDAO.insertMessage(message);
+    }
   }
 
   checkMessage(message) {
     return messageDAO.getMessage(message.link) === null;
   }
 
-  deleteMessageWithReference(message) {
+  deleteMessageByReference(message) {
     const messageSupp = messageDAO.getMessageFromReference(
       message.navarea,
       message.reference
