@@ -8,6 +8,7 @@ class AskMeDeskManager {
     urls: {
       autentication: "/rest/authentication/token",
       requestCreation: "/rest/richieste/creazione-richiesta-ct",
+      requestList: "/rest/richieste",
     },
   };
 
@@ -78,6 +79,85 @@ class AskMeDeskManager {
           }
         });
     });
+  }
+
+  getMessage() {
+    return new Promise((resolve) => {
+      this.askMeServerAuth()
+        .then((res) => {
+          const { sessionId, token } = res.data;
+          axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
+          axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
+          // console.log(sessionId, token);
+          let url =
+            this.askMeServer.baseUri + this.askMeServer.urls.requestList;
+
+          let options = {
+            params: {
+              listaIdTipoRichiesta: 2, // TIPO INC 2 - TIPO GEN 3
+              idUtenteCre: 586, // SVILUPPO 586 - RILASCIO 583
+              statoRichiesta: "C", //SOLO PER CONTROLLO RIMOZIONE CORRETTA ELEMENTI
+            },
+          };
+
+          this.doAxiosCall("get", url, options)
+            .then((res) => {
+              const list = res.data.data;
+              const signalsObj = {};
+              if (list.length) {
+                list.forEach((el) => {
+                  if (el.oggetto === "XXXXXX") return;
+                  const position = JSON.parse(el.descrizione);
+                  const id = el.idRichiesta;
+                  const dateMs = new Date(el.dataRichiesta);
+                  const date = this.getDate(dateMs);
+                  const time = this.getTime(dateMs);
+                  signalsObj[id] = {
+                    type: el.oggetto,
+                    latitude: position.lat,
+                    longitude: position.long,
+                    date,
+                    time,
+                  };
+                });
+                resolve({ message: signalsObj });
+              }
+            })
+            .catch((e) => {
+              if (e.code === "ENOTFOUND") {
+                console.log("errore di connessione al server");
+              } else {
+                console.log(e);
+              }
+            });
+        })
+        .catch((e) => {
+          if (e.code === "ENOTFOUND") {
+            console.log("errore di connessione al server");
+          } else {
+            console.log("errore di autenticazione al server");
+          }
+        });
+    });
+  }
+
+  getDate(date) {
+    const day =
+      date.getDate() < 10 ? `0${date.getDate()}` : `${date.getDate()}`;
+    const month =
+      date.getMonth() + 1 < 10
+        ? `0${date.getMonth(+1)}`
+        : `${date.getMonth() + 1}`;
+    return `${day}/${month}/${date.getFullYear()}`;
+  }
+
+  getTime(date) {
+    let hours = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
+    const desc = date.getHours() >= 12 ? "PM" : "AM";
+    hours = hours < 10 ? `0${hours}` : `${hours}`;
+    const minutes =
+      date.getMinutes() < 10 ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
+    return `${hours}:${minutes} ${desc}`;
   }
 
   askMeServerAuth() {
