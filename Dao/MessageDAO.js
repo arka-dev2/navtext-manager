@@ -120,7 +120,30 @@ class MessageDAO {
   delateMessage(message) {
     const query = "delete from messages where link = ?";
     const values = [message.link];
-    conn.query(query, values);
+    return conn.query(query, values).affectedRows > 0;
+  }
+
+  getMessageByPublicationDate(publicationDate) {
+    let messages = [];
+
+    const query = "select * from messages where publication_date = ?";
+    const values = [publicationDate];
+    const results = conn.query(query, values);
+
+    for (let result of results) {
+      let message = new Message(
+        result.link,
+        result.publication_date,
+        result.type,
+        result.description,
+        result.text,
+        result.navarea,
+        result.reference,
+        result.invio_lascaux === 1
+      );
+      messages.push(message);
+    }
+    return messages;
   }
 }
 
