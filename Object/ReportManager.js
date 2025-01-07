@@ -33,7 +33,7 @@ class ReportManager {
       coordinates: null,
       navtext: {
         navarea: message.navarea,
-        text: message.text,
+        text: message.text.replaceAll("\n", "<br>"),
         description: message.description,
       },
     };
@@ -68,6 +68,7 @@ class ReportManager {
       } else {
         const matchCircle = text.match(/WITHIN (\d+(?:\.\d+)) MILES?/);
         if (matchCircle !== null) {
+          // 500 METER EXCURSION ZONE
           areaType = "circle";
           coordinates = coordinatesExtractor.getCoordinate(text);
           coordinates[0].radius =
@@ -162,7 +163,7 @@ class ReportManager {
       coordinates,
       navtext: {
         navarea: message.navarea,
-        text: message.text,
+        text: message.text.replaceAll("\n", "<br>"),
         description: message.description,
       },
     };
