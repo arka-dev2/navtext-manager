@@ -1,3 +1,5 @@
+const reportManager = require("./ReportManager.js");
+const messageManager = require("./MessageManager.js");
 const axios = require("axios");
 
 class AskMeDeskManager {
@@ -22,61 +24,67 @@ class AskMeDeskManager {
           let url =
             this.askMeServer.baseUri + this.askMeServer.urls.requestCreation;
 
-          for (let messsage of messages) {
-            const obj = {
-              long: null,
-              lat: null,
-              description: messsage.description,
-              text: messsage.text.replaceAll("\n", "<br>"),
-              navarea: messsage.navarea,
-            };
+          for (let message of messages) {
+            if (!message.invioLascaux) {
+              const report = reportManager.getReportFromMessage(message);
+              const obj = {
+                areaType: report.areaType,
+                coordinates: report.coordinates,
+                navtext: report.navtext,
+              };
 
-            const options = {
-              codServizio: "AMPLM",
-              codAssetRoot: "SW",
-              codAssetFiglio: "SW",
-              codTipoRichiesta: "INC",
-              codPriorita: "STD",
-              oggetto: "uncategorized",
-              descrizione: JSON.stringify(obj),
-              idUtenteRichiedente: 586, // SVILUPPO 586 - RILASCIO 583
-              codiceCanale: "WEB",
-              listaSezioniRichiesta: [
-                {
-                  codice: "IAA",
-                  listaAttributiSezione: [
-                    {
-                      codiceAttributo: "VSL",
-                      valoreAttributo: "navtex-alert",
-                    },
-                    {
-                      codiceAttributo: "SWV",
-                      valoreAttributo: "1.0.0",
-                    },
-                  ],
-                },
-              ],
-            };
-
-            this.doAxiosCall("post", url, options)
-              .then((res) => {
-                console.log("messaggio inserito");
-              })
-              .catch((e) => {
-                if (e.code === "ENOTFOUND") {
-                  console.log("errore di connessione al server");
-                } else {
-                  console.log("errore di autenticazione al server");
-                }
-              });
+              const options = {
+                codServizio: "AMPLM",
+                codAssetRoot: "SW",
+                codAssetFiglio: "SW",
+                codTipoRichiesta: "INC",
+                codPriorita: "STD",
+                oggetto: report.messageType,
+                descrizione: JSON.stringify(obj),
+                idUtenteRichiedente: 586, // SVILUPPO 586 - RILASCIO 583
+                codiceCanale: "WEB",
+                listaSezioniRichiesta: [
+                  {
+                    codice: "IAA",
+                    listaAttributiSezione: [
+                      {
+                        codiceAttributo: "VSL",
+                        valoreAttributo: "navtex-alert",
+                      },
+                      {
+                        codiceAttributo: "SWV",
+                        valoreAttributo: "1.0.0",
+                      },
+                    ],
+                  },
+                ],
+              };
+              // console.log(options);
+              // messageManager.updateInvioLascaux(message);
+              // console.log("report inviato");
+              this.doAxiosCall("post", url, options)
+                .then((res) => {
+                  messageManager.updateInvioLascaux(message);
+                  // progressBar.updatedOneStep();
+                })
+                .catch((e) => {
+                  if (e.code === "ENOTFOUND") {
+                    console.log("errore di connessione al server");
+                  } else {
+                    console.log("errore di autenticazione al server");
+                  }
+                  console.log(e.message);
+                });
+            }
           }
         })
         .catch((e) => {
           if (e.code === "ENOTFOUND") {
             console.log("errore di connessione al server");
-          } else {
-            console.log("errore di autenticazione al server");
           }
+          // else {
+          //   console.log("errore di autenticazione al server");
+          // }
         });
     });
   }
