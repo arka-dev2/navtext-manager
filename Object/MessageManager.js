@@ -59,7 +59,32 @@ class MessageManager {
       message.navarea,
       message.reference
     );
-    if (messageSupp !== null) messageDAO.delateMessage(messageSupp);
+    if (messageSupp !== null) {
+      messageDAO.delateMessage(messageSupp);
+      message.invioLascaux = true;
+    }
+  }
+
+  getMessageToSend() {
+    const dateString = this.getTodayDateString();
+    let message = messageDAO.getMessageByPublicationDate(dateString);
+    message = message.filter((elem) => !elem.invioLascaux);
+    return message;
+  }
+
+  getTodayDateString() {
+    const date = new Date();
+    const year = date.getFullYear();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    day = day < 10 ? `0${day}` : `${day}`;
+    month = month < 10 ? `0${month}` : `${month}`;
+    return `${year}-${month}-${day}`;
+  }
+
+  updateInvioLascaux(message) {
+    message.invioLascaux = true;
+    messageDAO.updateMessage(message);
   }
 }
 
