@@ -11,6 +11,7 @@ class AskMeDeskManager {
       autentication: "/rest/authentication/token",
       requestCreation: "/rest/richieste/creazione-richiesta-ct",
       requestList: "/rest/richieste",
+      requestDelete: "/rest/richieste/cancellazione-massiva",
     },
   };
 
@@ -59,13 +60,9 @@ class AskMeDeskManager {
                   },
                 ],
               };
-              // console.log(options);
-              // messageManager.updateInvioLascaux(message);
-              // console.log("report inviato");
               this.doAxiosCall("post", url, options)
                 .then((res) => {
                   messageManager.updateInvioLascaux(message);
-                  // progressBar.updatedOneStep();
                 })
                 .catch((e) => {
                   if (e.code === "ENOTFOUND") {
@@ -81,10 +78,9 @@ class AskMeDeskManager {
         .catch((e) => {
           if (e.code === "ENOTFOUND") {
             console.log("errore di connessione al server");
+          } else {
+            console.log("errore di autenticazione al server");
           }
-          // else {
-          //   console.log("errore di autenticazione al server");
-          // }
         });
     });
   }
@@ -96,7 +92,6 @@ class AskMeDeskManager {
           const { sessionId, token } = res.data;
           axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
           axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
-          // console.log(sessionId, token);
           let url =
             this.askMeServer.baseUri + this.askMeServer.urls.requestList;
 
@@ -104,7 +99,8 @@ class AskMeDeskManager {
             params: {
               listaIdTipoRichiesta: 2, // TIPO INC 2 - TIPO GEN 3
               idUtenteCre: 586, // SVILUPPO 586 - RILASCIO 583
-              statoRichiesta: "C", //SOLO PER CONTROLLO RIMOZIONE CORRETTA ELEMENTI
+              statoRichiesta: "A", //SOLO PER CONTROLLO RIMOZIONE CORRETTA ELEMENTI
+              stato: "A",
             },
           };
 
@@ -128,8 +124,43 @@ class AskMeDeskManager {
                     time,
                   };
                 });
-                resolve({ message: signalsObj });
               }
+              resolve({ message: signalsObj });
+            })
+            .catch((e) => {
+              if (e.code === "ENOTFOUND") {
+                console.log("errore di connessione al server");
+              } else {
+                console.log(e);
+              }
+            });
+        })
+        .catch((e) => {
+          if (e.code === "ENOTFOUND") {
+            console.log("errore di connessione al server");
+          } else {
+            console.log(e);
+          }
+        });
+    });
+  }
+
+  delateMessages(idRichieste) {
+    return new Promise((resolve) => {
+      this.askMeServerAuth()
+        .then((res) => {
+          const { sessionId, token } = res.data;
+          axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
+          axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
+          let url =
+            this.askMeServer.baseUri + this.askMeServer.urls.requestDelete;
+          let options = {
+            idRichieste: idRichieste,
+            note: "",
+          };
+          this.doAxiosCall("post", url, options)
+            .then((res) => {
+              console.log("messaggi eliminati");
             })
             .catch((e) => {
               if (e.code === "ENOTFOUND") {
