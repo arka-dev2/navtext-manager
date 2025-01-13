@@ -7,12 +7,8 @@ const conn = require("./Object/Utiles/conn.js");
 
 async function main() {
   let allMessages = [];
-  const pageNumber = await messageManager.getPageNumber2();
-  const progressBar = new ProgressBar(
-    pageNumber,
-    "pagine",
-    "download dei navtex"
-  );
+  const pageNumber = await messageManager.getPagesNumberToday();
+  const progressBar = new ProgressBar(pageNumber, "pagine", "download dei navtex");
 
   for (let i = 1; i <= pageNumber; i++) {
     try {

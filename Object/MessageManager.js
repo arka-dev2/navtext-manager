@@ -4,17 +4,17 @@ const loading = require("loading-cli");
 
 class MessageManager {
   //questa funzione serve per prendersi il numero di tutte le pagine con i navtex di oggi
-  async getPageNumber2() {
+  async getPagesNumberToday() {
     const load = loading("conteggio delle pagine").start();
-    const pageNumber = await pageDetected.getPageNumber2();
+    const pageNumber = await pageDetected.getPagesNumberToday();
     load.stop();
     return pageNumber;
   }
 
   //questa funzione serve per prendersi il numero di tutte le pagine di marine-safety
-  async getPageNumber() {
+  async getPageNumberAllMessages() {
     const load = loading("conteggio delle pagine").start();
-    const pageNumber = await pageDetected.getPageNumber();
+    const pageNumber = await pageDetected.getPageNumberAllMessages();
     load.stop();
     return pageNumber;
   }

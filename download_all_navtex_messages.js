@@ -4,12 +4,8 @@ const messageManager = require("./Object/MessageManager.js");
 const conn = require("./Object/Utiles/conn.js");
 
 (async () => {
-  const pageNumber = await messageManager.getPageNumber();
-  const progressBar = new ProgressBar(
-    pageNumber,
-    "pagine",
-    "download dei navtex"
-  );
+  const pageNumber = await messageManager.getPageNumberAllMessages();
+  const progressBar = new ProgressBar(pageNumber, "pagine", "download dei navtex");
 
   for (let i = 1; i <= pageNumber; i++) {
     try {
