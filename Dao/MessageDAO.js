@@ -1,4 +1,4 @@
-const conn = require("../Object/conn");
+const conn = require("../Object/Utiles/conn.js");
 const Message = require("../Entity/message");
 
 class MessageDAO {

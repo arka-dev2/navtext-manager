@@ -1,7 +1,7 @@
 //lo script scarica tutti i navtex dal sito marine safety
 const ProgressBar = require("./Object/ProgressBar.js");
 const messageManager = require("./Object/MessageManager.js");
-const conn = require("./Object/conn.js");
+const conn = require("./Object/Utiles/conn.js");
 
 (async () => {
   const pageNumber = await messageManager.getPageNumber();
