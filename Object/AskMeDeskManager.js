@@ -19,11 +19,7 @@ class AskMeDeskManager {
     return new Promise((resolve) => {
       this.askMeServerAuth()
         .then((res) => {
-          const { sessionId, token } = res.data;
-          axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
-          axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
-          let url =
-            this.askMeServer.baseUri + this.askMeServer.urls.requestCreation;
+          let url = this.askMeServer.baseUri + this.askMeServer.urls.requestCreation;
 
           for (let message of messages) {
             if (!message.invioLascaux) {
@@ -65,22 +61,13 @@ class AskMeDeskManager {
                   messageManager.updateInvioLascaux(message);
                 })
                 .catch((e) => {
-                  if (e.code === "ENOTFOUND") {
-                    console.log("errore di connessione al server");
-                  } else {
-                    console.log("errore di autenticazione al server");
-                  }
-                  console.log(e.message);
+                  console.log(e);
                 });
             }
           }
         })
         .catch((e) => {
-          if (e.code === "ENOTFOUND") {
-            console.log("errore di connessione al server");
-          } else {
-            console.log("errore di autenticazione al server");
-          }
+          console.log(e);
         });
     });
   }
@@ -89,12 +76,7 @@ class AskMeDeskManager {
     return new Promise((resolve) => {
       this.askMeServerAuth()
         .then((res) => {
-          const { sessionId, token } = res.data;
-          axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
-          axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
-          let url =
-            this.askMeServer.baseUri + this.askMeServer.urls.requestList;
-
+          let url = this.askMeServer.baseUri + this.askMeServer.urls.requestList;
           let options = {
             params: {
               listaIdTipoRichiesta: 2, // TIPO INC 2 - TIPO GEN 3
@@ -128,19 +110,11 @@ class AskMeDeskManager {
               resolve({ message: signalsObj });
             })
             .catch((e) => {
-              if (e.code === "ENOTFOUND") {
-                console.log("errore di connessione al server");
-              } else {
-                console.log(e);
-              }
+              console.log(e);
             });
         })
         .catch((e) => {
-          if (e.code === "ENOTFOUND") {
-            console.log("errore di connessione al server");
-          } else {
-            console.log(e);
-          }
+          console.log(e);
         });
     });
   }
