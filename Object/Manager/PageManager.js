@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const axios = require("axios");
-const Message = require("../Entity/message");
+const Message = require("../../Entity/message");
 
 class PageDetected {
   async getMessagesArr(pageUrl) {
@@ -28,7 +28,7 @@ class PageDetected {
     return messages;
   }
 
-  async getPageNumber() {
+  async getPageNumberAllMessages() {
     const { data: html } = await axios.get(`https://marinesafety.net/`);
     const $ = cheerio.load(html);
     const element = $(
@@ -39,7 +39,7 @@ class PageDetected {
     return pageNumber;
   }
 
-  async getPageNumber2() {
+  async getPagesNumberToday() {
     const date = new Date();
     const year = date.getFullYear();
     let day = date.getDate();
@@ -48,8 +48,7 @@ class PageDetected {
     month = month < 10 ? `0${month}` : `${month}`;
     const todayStringDate = `${year}-${month}-${day}`;
 
-    let numPage;
-    for (numPage = 1; true; numPage++) {
+    for (let numPage = 1; true; numPage++) {
       const link = `https://marinesafety.net/?query-52-page=${numPage}`;
       const dates = await this.#getDateArr(link);
       if (dates.includes(todayStringDate)) continue;

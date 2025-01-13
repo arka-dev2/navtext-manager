@@ -1,5 +1,5 @@
-const dateExtractor = require("./DateExtractor");
-const coordinatesExtractor = require("./CoordinatesExtractor");
+const dateExtractor = require("../Utiles/DateExtractor");
+const coordinatesExtractor = require("../Utiles/CoordinatesExtractor");
 
 class ReportManager {
   getReportFromMessage(message) {
@@ -37,9 +37,7 @@ class ReportManager {
         coordinates = coordinatesExtractor.getCoordinate(text);
       } else if (text.toUpperCase().includes("IN AREAS BOUND BY")) {
         areaType = "multi-polygon";
-        const areas = text.match(
-          /\b([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])\b/g
-        );
+        const areas = text.match(/\b([A-Z]\.)\s*([\d-]+\.\d+[NS]\s*[\d-]+\.\d+[EW])\b/g);
         coordinates = [];
         for (let area of areas) {
           coordinates.push(coordinatesExtractor.getCoordinate(area));
@@ -56,8 +54,7 @@ class ReportManager {
           // 500 METER EXCURSION ZONE
           areaType = "circle";
           coordinates = coordinatesExtractor.getCoordinate(text);
-          coordinates[0].radius =
-            Number(matchCircle[1].replace(",", ".")) * 1852;
+          coordinates[0].radius = Number(matchCircle[1].replace(",", ".")) * 1852;
         } else {
           areaType = "punctual";
           coordinates = coordinatesExtractor.getCoordinate(text);
@@ -76,18 +73,10 @@ class ReportManager {
     if (navareaList !== null) {
       for (let i = 0; i < navareaList.length - 1; i++) {
         messages.push(
-          text.substring(
-            text.indexOf(navareaList[i]),
-            text.indexOf(navareaList[i + 1])
-          )
+          text.substring(text.indexOf(navareaList[i]), text.indexOf(navareaList[i + 1]))
         );
       }
-      messages.push(
-        text.substring(
-          text.indexOf(navareaList[navareaList.length - 1]),
-          text.length
-        )
-      );
+      messages.push(text.substring(text.indexOf(navareaList[navareaList.length - 1]), text.length));
     } else messages.push(text);
 
     return messages;
@@ -99,8 +88,7 @@ class ReportManager {
       /\bCANCEL NAVAREA (I|II|III|IV|V|VI|VII|VIII|IX|X|XI|XII|XIII|XIV|XV|XVI|XVII|XVIII|XIX|XX|XXI)(?:\s+(\d{1,5}\/\d{1,4}))?\b/g
     );
     if (navareaList !== null) {
-      for (let navarea of navareaList)
-        message.text = message.text.replaceAll(navarea, "");
+      for (let navarea of navareaList) message.text = message.text.replaceAll(navarea, "");
     }
 
     //qui cambio il formato delle coordinate
@@ -108,9 +96,7 @@ class ReportManager {
   }
 
   getReport(message) {
-    let { areaType, coordinates } = this.getAreaTypeAndCoordinates(
-      message.text
-    );
+    let { areaType, coordinates } = this.getAreaTypeAndCoordinates(message.text);
     let messageType = "uncategorized";
 
     if (coordinates !== null && areaType !== null) {

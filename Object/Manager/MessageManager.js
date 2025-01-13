@@ -1,5 +1,5 @@
-const messageDAO = require("../Dao/MessageDAO.js");
-const pageDetected = require("./PageDetected.js");
+const messageDAO = require("../../Dao/MessageDAO.js");
+const pageDetected = require("./PageManager.js");
 const loading = require("loading-cli");
 
 class MessageManager {
@@ -59,9 +59,8 @@ class MessageManager {
   }
 
   getMessageToSend() {
-    const dateString = this.getTodayDateString();
-    let message = messageDAO.getMessageByPublicationDate(dateString);
-    message = message.filter((elem) => !elem.invioLascaux);
+    // const dateString = this.getTodayDateString();
+    let message = messageDAO.getMessageToSend();
     return message;
   }
 
