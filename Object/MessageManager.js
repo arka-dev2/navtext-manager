@@ -1,16 +1,12 @@
 const messageDAO = require("../Dao/MessageDAO.js");
-const PageDetected = require("./PageDetected.js");
+const pageDetected = require("./PageDetected.js");
 const loading = require("loading-cli");
 
 class MessageManager {
-  constructor() {
-    this.pageDetected = new PageDetected();
-  }
-
   //questa funzione serve per prendersi il numero di tutte le pagine con i navtex di oggi
   async getPageNumber2() {
     const load = loading("conteggio delle pagine").start();
-    const pageNumber = await this.pageDetected.getPageNumber2();
+    const pageNumber = await pageDetected.getPageNumber2();
     load.stop();
     return pageNumber;
   }
@@ -18,7 +14,7 @@ class MessageManager {
   //questa funzione serve per prendersi il numero di tutte le pagine di marine-safety
   async getPageNumber() {
     const load = loading("conteggio delle pagine").start();
-    const pageNumber = await this.pageDetected.getPageNumber();
+    const pageNumber = await pageDetected.getPageNumber();
     load.stop();
     return pageNumber;
   }
@@ -27,7 +23,7 @@ class MessageManager {
     const link = `https://marinesafety.net/?query-52-page=${page}`;
 
     //----    scarto i messaggi di tipo amministrative, test e technical difficulties
-    const messages = await this.pageDetected.getMessagesArr(link);
+    const messages = await pageDetected.getMessagesArr(link);
     const acceptedMessages = [];
     for (let message of messages) {
       if (
@@ -55,10 +51,7 @@ class MessageManager {
   }
 
   deleteMessageByReference(message) {
-    const messageSupp = messageDAO.getMessageFromReference(
-      message.navarea,
-      message.reference
-    );
+    const messageSupp = messageDAO.getMessageFromReference(message.navarea, message.reference);
     if (messageSupp !== null) {
       messageDAO.delateMessage(messageSupp);
       message.invioLascaux = true;

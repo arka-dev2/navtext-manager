@@ -7,9 +7,7 @@ class PageDetected {
     const { data: html } = await axios.get(pageUrl);
     const $ = cheerio.load(html);
     const messages = [];
-    const divs = $(
-      "body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div"
-    );
+    const divs = $("body > div.wp-site-blocks > div > div:nth-child(2) > div > ul > li > div");
 
     for (let div of divs) {
       const links = $(div).find("a");
@@ -23,16 +21,7 @@ class PageDetected {
       if (navarea === null) navarea = this.getNavarea(text);
 
       messages.push(
-        new Message(
-          link,
-          publicationDate,
-          type,
-          description,
-          text,
-          navarea,
-          reference,
-          false
-        )
+        new Message(link, publicationDate, type, description, text, navarea, reference, false)
       );
     }
 
@@ -114,10 +103,7 @@ class PageDetected {
     // console.log(navareaList);
     if (navareaList !== null) {
       const number = Number(navareaList[1]);
-      return (
-        "NAVAREA " +
-        (isNaN(number) ? navareaList[1] : this.convertNavare(number))
-      );
+      return "NAVAREA " + (isNaN(number) ? navareaList[1] : this.convertNavare(number));
     }
     return null;
   }
@@ -170,4 +156,4 @@ class PageDetected {
   }
 }
 
-module.exports = PageDetected;
+module.exports = new PageDetected();
