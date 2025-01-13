@@ -145,6 +145,28 @@ class MessageDAO {
     }
     return messages;
   }
+
+  getMessageToSend() {
+    let messages = [];
+
+    const query = "select * from messages where invio_lascaux = 0";
+    const results = conn.query(query);
+
+    for (let result of results) {
+      let message = new Message(
+        result.link,
+        result.publication_date,
+        result.type,
+        result.description,
+        result.text,
+        result.navarea,
+        result.reference,
+        result.invio_lascaux === 1
+      );
+      messages.push(message);
+    }
+    return messages;
+  }
 }
 
 module.exports = new MessageDAO();
