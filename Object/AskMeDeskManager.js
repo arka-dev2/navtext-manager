@@ -152,8 +152,7 @@ class AskMeDeskManager {
           const { sessionId, token } = res.data;
           axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
           axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
-          let url =
-            this.askMeServer.baseUri + this.askMeServer.urls.requestDelete;
+          let url = this.askMeServer.baseUri + this.askMeServer.urls.requestDelete;
           let options = {
             idRichieste: idRichieste,
             note: "",
@@ -181,12 +180,8 @@ class AskMeDeskManager {
   }
 
   getDate(date) {
-    const day =
-      date.getDate() < 10 ? `0${date.getDate()}` : `${date.getDate()}`;
-    const month =
-      date.getMonth() + 1 < 10
-        ? `0${date.getMonth(+1)}`
-        : `${date.getMonth() + 1}`;
+    const day = date.getDate() < 10 ? `0${date.getDate()}` : `${date.getDate()}`;
+    const month = date.getMonth() + 1 < 10 ? `0${date.getMonth(+1)}` : `${date.getMonth() + 1}`;
     return `${day}/${month}/${date.getFullYear()}`;
   }
 
@@ -194,28 +189,37 @@ class AskMeDeskManager {
     let hours = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
     const desc = date.getHours() >= 12 ? "PM" : "AM";
     hours = hours < 10 ? `0${hours}` : `${hours}`;
-    const minutes =
-      date.getMinutes() < 10 ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
+    const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : `${date.getMinutes()}`;
     return `${hours}:${minutes} ${desc}`;
   }
 
   askMeServerAuth() {
     return new Promise((resolve, reject) => {
       const methods = "get";
-      const url =
-        this.askMeServer.baseUri + this.askMeServer.urls.autentication;
-      const options = {
-        auth: {
-          username: this.askMeServer.username,
-          password: this.askMeServer.password,
-        },
-      };
-      this.doAxiosCall(methods, url, options)
+      const url = this.askMeServer.baseUri + this.askMeServer.urls.autentication;
+      this.doAxiosCall(methods, url, {})
         .then((res) => {
           resolve(res);
         })
         .catch((e) => {
-          reject(e);
+          if (e.status === 401) {
+            const options = {
+              auth: {
+                username: this.askMeServer.username,
+                password: this.askMeServer.password,
+              },
+            };
+            this.doAxiosCall(methods, url, options)
+              .then((res) => {
+                const { sessionId, token } = res.data;
+                axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
+                axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
+                resolve(res);
+              })
+              .catch((e) => {
+                reject(e);
+              });
+          } else reject(e);
         });
     });
   }
