@@ -1,5 +1,4 @@
 const reportManager = require("./ReportManager.js");
-const messageManager = require("./MessageManager.js");
 const axios = require("axios");
 
 class AskMeDeskManager {
@@ -15,7 +14,7 @@ class AskMeDeskManager {
     },
   };
 
-  putMessages(messages) {
+  putMessages(messages, callback) {
     return new Promise((resolve) => {
       this.askMeServerAuth()
         .then((res) => {
@@ -58,7 +57,7 @@ class AskMeDeskManager {
               };
               this.doAxiosCall("post", url, options)
                 .then((res) => {
-                  messageManager.updateInvioLascaux(message);
+                  callback();
                 })
                 .catch((e) => {
                   console.log(e);
