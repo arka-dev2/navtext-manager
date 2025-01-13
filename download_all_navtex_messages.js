@@ -1,5 +1,5 @@
 //lo script scarica tutti i navtex dal sito marine safety
-const ProgressBar = require("./Object/ProgressBar.js");
+const ProgressBar = require("./Object/Utiles/ProgressBar.js");
 const messageManager = require("./Object/MessageManager.js");
 const conn = require("./Object/Utiles/conn.js");
 
