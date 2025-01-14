@@ -21,48 +21,46 @@ class AskMeDeskManager {
           let url = this.askMeServer.baseUri + this.askMeServer.urls.requestCreation;
 
           for (let message of messages) {
-            if (!message.invioLascaux) {
-              const report = reportManager.getReportFromMessage(message);
-              const obj = {
-                areaType: report.areaType,
-                coordinates: report.coordinates,
-                navtext: report.navtext,
-              };
+            const report = reportManager.getReportFromMessage(message);
+            const obj = {
+              areaType: report.areaType,
+              coordinates: report.coordinates,
+              navtext: report.navtext,
+            };
 
-              const options = {
-                codServizio: "AMPLM",
-                codAssetRoot: "SW",
-                codAssetFiglio: "SW",
-                codTipoRichiesta: "INC",
-                codPriorita: "STD",
-                oggetto: report.messageType,
-                descrizione: JSON.stringify(obj),
-                idUtenteRichiedente: 586, // SVILUPPO 586 - RILASCIO 583
-                codiceCanale: "WEB",
-                listaSezioniRichiesta: [
-                  {
-                    codice: "IAA",
-                    listaAttributiSezione: [
-                      {
-                        codiceAttributo: "VSL",
-                        valoreAttributo: "navtex-alert",
-                      },
-                      {
-                        codiceAttributo: "SWV",
-                        valoreAttributo: "1.0.0",
-                      },
-                    ],
-                  },
-                ],
-              };
-              this.doAxiosCall("post", url, options)
-                .then((res) => {
-                  callback();
-                })
-                .catch((e) => {
-                  console.log(e);
-                });
-            }
+            const options = {
+              codServizio: "AMPLM",
+              codAssetRoot: "SW",
+              codAssetFiglio: "SW",
+              codTipoRichiesta: "INC",
+              codPriorita: "STD",
+              oggetto: report.messageType,
+              descrizione: JSON.stringify(obj),
+              idUtenteRichiedente: 586, // SVILUPPO 586 - RILASCIO 583
+              codiceCanale: "WEB",
+              listaSezioniRichiesta: [
+                {
+                  codice: "IAA",
+                  listaAttributiSezione: [
+                    {
+                      codiceAttributo: "VSL",
+                      valoreAttributo: "navtex-alert",
+                    },
+                    {
+                      codiceAttributo: "SWV",
+                      valoreAttributo: "1.0.0",
+                    },
+                  ],
+                },
+              ],
+            };
+            this.doAxiosCall("post", url, options)
+              .then((res) => {
+                callback();
+              })
+              .catch((e) => {
+                console.log(e);
+              });
           }
         })
         .catch((e) => {

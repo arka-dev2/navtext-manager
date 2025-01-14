@@ -1,4 +1,4 @@
-const messageDAO = require("../../Dao/MessageDAO.js");
+const messageDAO = require("../Dao/MessageDAO.js");
 const pageDetected = require("./PageManager.js");
 const loading = require("loading-cli");
 
@@ -20,18 +20,20 @@ class MessageManager {
   async getMessageInPage(page) {
     const link = `https://marinesafety.net/?query-52-page=${page}`;
     const messages = await pageDetected.getMessagesArr(link);
-    return acceptedMessages;
+    return messages;
   }
 
   checkMessages(messages) {
     const acceptedMessages = [];
+    const todayDateString = this.getTodayDateString();
     for (let message of messages) {
       if (
         !this.checkMessageExistDB(message) ||
         message.type === "TECHNICAL DIFFICULTIES" ||
         message.type === "ADMINISTRATIVE" ||
         message.type === "TEST" ||
-        message.navarea === null
+        message.navarea === null ||
+        message.publicationDate !== todayDateString
       )
         continue;
       acceptedMessages.push(message);
@@ -39,7 +41,7 @@ class MessageManager {
     return acceptedMessages;
   }
 
-  insertIntoDB(messages) {
+  insertAndDelateIntoDB(messages) {
     for (let message of messages) {
       this.deleteMessageByReference(message);
       messageDAO.insertMessage(message);
@@ -63,15 +65,15 @@ class MessageManager {
     return message;
   }
 
-  // getTodayDateString() {
-  //   const date = new Date();
-  //   const year = date.getFullYear();
-  //   let day = date.getDate();
-  //   let month = date.getMonth() + 1;
-  //   day = day < 10 ? `0${day}` : `${day}`;
-  //   month = month < 10 ? `0${month}` : `${month}`;
-  //   return `${year}-${month}-${day}`;
-  // }
+  getTodayDateString() {
+    const date = new Date();
+    const year = date.getFullYear();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    day = day < 10 ? `0${day}` : `${day}`;
+    month = month < 10 ? `0${month}` : `${month}`;
+    return `${year}-${month}-${day}`;
+  }
 
   updateInvioLascaux(message) {
     message.invioLascaux = true;
