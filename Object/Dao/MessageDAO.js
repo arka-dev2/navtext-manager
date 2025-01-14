@@ -8,19 +8,7 @@ class MessageDAO {
     const query = "select * from messages";
     const results = conn.query(query);
 
-    for (let result of results) {
-      let message = new Message(
-        result.link,
-        result.publication_date,
-        result.type,
-        result.description,
-        result.text,
-        result.navarea,
-        result.reference,
-        result.invio_lascaux === 1
-      );
-      messages.push(message);
-    }
+    for (let result of results) messages.push(this.#getMessageFromResult(result));
     return messages;
   }
 
@@ -31,24 +19,13 @@ class MessageDAO {
     const values = [id];
     const result = conn.query(query, values);
 
-    if (result.length !== 0) {
-      message = new Message(
-        result[0].link,
-        result[0].publication_date,
-        result[0].type,
-        result[0].description,
-        result[0].text,
-        result[0].navarea,
-        result[0].reference,
-        result[0].invio_lascaux === 1
-      );
-    }
+    if (result.length !== 0) message = this.#getMessageFromResult(result[0]);
     return message;
   }
 
   insertMessage(message) {
     const query =
-      "insert into messages (link, publication_date, type, description, text, navarea, reference, invio_lascaux) values(?,?,?,?,?,?,?,?)";
+      "insert into messages (link, publication_date, type, description, text, navarea, reference, invio_lascaux, id_lascaux) values(?,?,?,?,?,?,?,?,?)";
     const values = [
       message.link,
       message.publicationDate,
@@ -58,31 +35,18 @@ class MessageDAO {
       message.navarea,
       message.reference,
       message.invioLascaux ? 1 : 0,
+      message.idLascaux,
     ];
     conn.query(query, values);
   }
 
   insertAllMessage(messages) {
-    const query =
-      "insert into messages (link, publication_date, type, description, text, navarea, reference, invio_lascaux) values(?,?,?,?,?,?,?,?)";
-    for (let message of messages) {
-      const values = [
-        message.link,
-        message.publicationDate,
-        message.type,
-        message.description,
-        message.text,
-        message.navarea,
-        message.reference,
-        message.invioLascaux ? 1 : 0,
-      ];
-      conn.query(query, values);
-    }
+    for (let message of messages) this.insertMessage(message);
   }
 
   updateMessage(message) {
     const query =
-      "update messages set publication_date = ?, type = ?, description = ?, text = ?, navarea = ?, reference = ?, invio_lascaux = ? where link = ?";
+      "update messages set publication_date = ?, type = ?, description = ?, text = ?, navarea = ?, reference = ?, invio_lascaux = ?, id_lascaux = ? where link = ?";
     const values = [
       message.publicationDate,
       message.type,
@@ -91,6 +55,7 @@ class MessageDAO {
       message.navarea,
       message.reference,
       message.invioLascaux ? 1 : 0,
+      message.idLascaux,
       message.link,
     ];
     conn.query(query, values);
@@ -102,18 +67,7 @@ class MessageDAO {
     const values = [navarea, reference];
     const result = conn.query(query, values);
 
-    if (result.length !== 0) {
-      message = new Message(
-        result[0].link,
-        result[0].publication_date,
-        result[0].type,
-        result[0].description,
-        result[0].text,
-        result[0].navarea,
-        result[0].reference,
-        result[0].invio_lascaux === 1
-      );
-    }
+    if (result.length !== 0) message = this.#getMessageFromResult(result[0]);
     return message;
   }
 
@@ -130,19 +84,7 @@ class MessageDAO {
     const values = [publicationDate];
     const results = conn.query(query, values);
 
-    for (let result of results) {
-      let message = new Message(
-        result.link,
-        result.publication_date,
-        result.type,
-        result.description,
-        result.text,
-        result.navarea,
-        result.reference,
-        result.invio_lascaux === 1
-      );
-      messages.push(message);
-    }
+    for (let result of results) messages.push(this.#getMessageFromResult(result));
     return messages;
   }
 
@@ -152,20 +94,22 @@ class MessageDAO {
     const query = "select * from messages where invio_lascaux = 0";
     const results = conn.query(query);
 
-    for (let result of results) {
-      let message = new Message(
-        result.link,
-        result.publication_date,
-        result.type,
-        result.description,
-        result.text,
-        result.navarea,
-        result.reference,
-        result.invio_lascaux === 1
-      );
-      messages.push(message);
-    }
+    for (let result of results) messages.push(this.#getMessageFromResult(result));
     return messages;
+  }
+
+  #getMessageFromResult(result) {
+    return new Message(
+      result.link,
+      result.publication_date,
+      result.type,
+      result.description,
+      result.text,
+      result.navarea,
+      result.reference,
+      result.invio_lascaux === 1,
+      result.id_lascaux
+    );
   }
 }
 

@@ -7,7 +7,8 @@ class Message {
     text,
     navarea,
     reference,
-    invioLascaux
+    invioLascaux,
+    idLascaux
   ) {
     this.link = link;
     this.publicationDate = publicationDate;
@@ -17,6 +18,7 @@ class Message {
     this.navarea = navarea;
     this.reference = reference;
     this.invioLascaux = invioLascaux;
+    this.idLascaux = idLascaux;
   }
 }
 
