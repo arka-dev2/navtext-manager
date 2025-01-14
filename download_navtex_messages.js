@@ -12,7 +12,8 @@ async function main() {
 
   for (let i = 1; i <= pageNumber; i++) {
     try {
-      const messages = await messageManager.getMessageInPage(i);
+      let messages = await messageManager.getMessageInPage(i);
+      messages = messageManager.checkMessages(messages);
       allMessages = allMessages.concat(messages);
     } catch (err) {
       console.error("Errore nel caricamento della pagina:", err);
