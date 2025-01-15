@@ -1,3 +1,4 @@
+const askMeDeskManager = require("./AskMeDeskManager.js");
 const messageDAO = require("../Dao/MessageDAO.js");
 const pageDetected = require("./PageManager.js");
 const loading = require("loading-cli");
@@ -42,22 +43,20 @@ class MessageManager {
   }
 
   insertAndDelateIntoDB(messages) {
+    const richiesteToDelete = [];
     for (let message of messages) {
-      this.deleteMessageByReference(message);
+      const messageSupp = messageDAO.getMessageByReference(message.navarea, message.reference);
+      if (messageSupp !== null) {
+        if (messageSupp.idLascaux !== 0) richiesteToDelete.push(messageSupp.idLascaux);
+        messageDAO.delateMessage(messageSupp);
+      }
       messageDAO.insertMessage(message);
     }
+    if (richiesteToDelete.length !== 0) askMeDeskManager.delateMessages(richiesteToDelete);
   }
 
   checkMessageExistDB(message) {
     return messageDAO.getMessage(message.link) === null;
-  }
-
-  deleteMessageByReference(message) {
-    const messageSupp = messageDAO.getMessageFromReference(message.navarea, message.reference);
-    if (messageSupp !== null) {
-      messageDAO.delateMessage(messageSupp);
-      message.invioLascaux = true;
-    }
   }
 
   getMessageToSend() {

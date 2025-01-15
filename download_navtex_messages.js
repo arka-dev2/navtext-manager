@@ -21,7 +21,7 @@ async function main() {
     progressBar.updatedOneStep();
   }
   progressBar.complete();
-  messageManager.insertIntoDB(allMessages);
+  messageManager.insertAndDelateIntoDB(allMessages);
 
   // allMessages = messageManager.getMessageToSend();
   // await askMeDeskManager.putMessages(allMessages);

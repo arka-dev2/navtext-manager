@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const axios = require("axios");
-const Message = require("../../Entity/message");
+const Message = require("../Entity/message");
 
 class PageDetected {
   async getMessagesArr(pageUrl) {
@@ -21,7 +21,7 @@ class PageDetected {
       if (navarea === null) navarea = this.getNavarea(text);
 
       messages.push(
-        new Message(link, publicationDate, type, description, text, navarea, reference, false)
+        new Message(link, publicationDate, type, description, text, navarea, reference, false, 0)
       );
     }
 
@@ -48,7 +48,8 @@ class PageDetected {
     month = month < 10 ? `0${month}` : `${month}`;
     const todayStringDate = `${year}-${month}-${day}`;
 
-    for (let numPage = 1; true; numPage++) {
+    let numPage = 1;
+    for (; true; numPage++) {
       const link = `https://marinesafety.net/?query-52-page=${numPage}`;
       const dates = await this.#getDateArr(link);
       if (dates.includes(todayStringDate)) continue;

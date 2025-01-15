@@ -1,4 +1,5 @@
 const reportManager = require("./ReportManager.js");
+const messageDAO = require("../Dao/MessageDAO.js");
 const axios = require("axios");
 
 class AskMeDeskManager {
@@ -14,7 +15,7 @@ class AskMeDeskManager {
     },
   };
 
-  putMessages(messages, callback) {
+  putMessages(messages) {
     return new Promise((resolve) => {
       this.askMeServerAuth()
         .then((res) => {
@@ -56,7 +57,9 @@ class AskMeDeskManager {
             };
             this.doAxiosCall("post", url, options)
               .then((res) => {
-                callback();
+                message.idLascaux = res.data.idRichiesta;
+                message.invioLascaux = true;
+                messageDAO.updateMessage(message);
               })
               .catch((e) => {
                 console.log(e);
@@ -120,9 +123,6 @@ class AskMeDeskManager {
     return new Promise((resolve) => {
       this.askMeServerAuth()
         .then((res) => {
-          const { sessionId, token } = res.data;
-          axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
-          axios.defaults.headers.common["Cookie"] = `JSESSIONID=${sessionId}`;
           let url = this.askMeServer.baseUri + this.askMeServer.urls.requestDelete;
           let options = {
             idRichieste: idRichieste,
