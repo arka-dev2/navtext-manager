@@ -23,8 +23,8 @@ async function main() {
   progressBar.complete();
   messageManager.insertAndDelateIntoDB(allMessages);
 
-  // allMessages = messageManager.getMessageToSend();
-  // await askMeDeskManager.putMessages(allMessages);
+  allMessages = messageManager.getMessageToSend();
+  await askMeDeskManager.putMessages(allMessages);
   conn.dispose();
 }
 

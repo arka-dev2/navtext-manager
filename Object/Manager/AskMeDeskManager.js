@@ -130,7 +130,7 @@ class AskMeDeskManager {
           };
           this.doAxiosCall("post", url, options)
             .then((res) => {
-              console.log("messaggi eliminati");
+              console.log("messaggi eliminati", idRichieste);
             })
             .catch((e) => {
               if (e.code === "ENOTFOUND") {

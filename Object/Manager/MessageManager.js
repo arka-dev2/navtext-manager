@@ -29,7 +29,7 @@ class MessageManager {
     const todayDateString = this.getTodayDateString();
     for (let message of messages) {
       if (
-        !this.checkMessageExistDB(message) ||
+        messageDAO.getMessage(message.link) !== null ||
         message.type === "TECHNICAL DIFFICULTIES" ||
         message.type === "ADMINISTRATIVE" ||
         message.type === "TEST" ||
@@ -55,13 +55,8 @@ class MessageManager {
     if (richiesteToDelete.length !== 0) askMeDeskManager.delateMessages(richiesteToDelete);
   }
 
-  checkMessageExistDB(message) {
-    return messageDAO.getMessage(message.link) === null;
-  }
-
   getMessageToSend() {
-    let message = messageDAO.getMessageToSend();
-    return message;
+    return messageDAO.getMessageToSend();
   }
 
   getTodayDateString() {
